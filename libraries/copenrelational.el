@@ -61,3 +61,4 @@
  					(switch-to-buffer opening-file-buffer)))
  	    (t                   (message "Illegal Type"))))))
 
+(provide 'copenrelational)

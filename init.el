@@ -54,25 +54,16 @@
 
 (server-start)
 
-;; ======================== package archives ======================
+;; =========== setting up min package requirements ================
 (require 'package)
+(require 'package-extensions)
 (package-initialize)
 (mapc (lambda (p) (push p package-archives))
       '(("melpa" . "http://melpa.org/packages/")))
-
-(defun install-required-packages (package-list)
-  (package-refresh-contents)
-  (mapc
-   (lambda (package) 
-     (unless (require package nil t)
-       (package-install package)))
-   package-list))
-
 (install-required-packages '(use-package))
-
-;; ======================== use-package ========================
 (require 'use-package)
 
+;; ================================================================
 (use-package cl-lib)
 
 (use-package ibuffer
@@ -95,26 +86,13 @@
          ("S-<f2>" . bm-previous))
   :ensure t)
 
-(defun dired-zip-files (zip-file)
-  (interactive "sEnter zip file name: ")
-  (shell-command
-   (concat "zip -r "
-	   zip-file
-	   " "
-	   (mapconcat 
-	    (lambda (fname) (format "%s" (file-relative-name fname)))
-	    (dired-get-marked-files) " ")))
-  (revert-buffer))
-
 (use-package dired+
-  :init (progn
-          (put 'dired-find-alternate-file 'disabled nil)
-          (eval-after-load "dired"
-            '(define-key dired-mode-map "z" 'dired-zip-files))
-          (eval-after-load "dired-aux"
-            '(add-to-list 'dired-compress-file-suffixes 
-                          '("\\.zip\\'" ".zip" "unzip"))))
-  :config (setq dired-do-highlighting t dired-dwim-target t)
+  :init (put 'dired-find-alternate-file 'disabled nil)
+  :config (progn
+            (setq dired-do-highlighting t dired-dwim-target t)
+            (add-to-list 'dired-compress-file-suffixes '("\\.zip\\'" ".zip" "unzip"))
+            (use-package dired-extensions)
+            (define-key dired-mode-map "z" 'dired-zip-files))
   :ensure t)
 
 (use-package magit
@@ -124,10 +102,10 @@
   :ensure t)
   
 (use-package nxml-mode
-  :commands nxml-mode
   :mode (("\\.csproj\\'" . nxml-mode)
          ("\\.fsproj\\'" . nxml-mode)
-         ("\\.xaml\\'"   . nxml-mode)))
+         ("\\.xaml\\'"   . nxml-mode))
+  :config (use-package nxml-extensions))
 
 (use-package octave-mode
   :mode ("\\.m$" . octave-mode))
@@ -179,3 +157,17 @@
           (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
           (add-hook 'haskell-mode-hook 'interactive-haskell-mode))
   :ensure t)
+
+(use-package copenrelational
+  :bind ("<f4>" . c-open-relational-file))
+
+(use-package copy-paste-utils
+  :bind (("C-d" . copy-paste-selection)
+         ("C-k" . my-kill-line)))
+
+(use-package speed7studio-utils
+  :commands (replace-guids
+             decode-hex-string
+             encode-hex-string)
+  :config (use-package uuid
+            :ensure t))
