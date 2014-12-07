@@ -141,7 +141,7 @@
             (use-package omnisharp
               :config (progn
                         ;; (setq omnisharp-debug t)
-                        (setq omnisharp-server-executable-path "~/projects/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe")
+                        (setq omnisharp-server-executable-path "~/.emacs.d/bin/omnisharp-server/OmniSharp.exe")
                         (define-key csharp-mode-map (kbd "C-o <f12>") 'omnisharp-go-to-definition)
                         (define-key csharp-mode-map (kbd "C-o C-<f12>") 'omnisharp-find-implementations)
                         (define-key csharp-mode-map (kbd "C-o M-S-<f12>") 'omnisharp-find-usages)
