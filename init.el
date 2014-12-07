@@ -4,8 +4,8 @@
 
 ;; ======================== set PATH for Windows unix tools  ==============
 (when (or (eq system-type 'windows-nt) (eq system-type 'msdos))
-  (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/gnuwin32/bin;" (getenv "PATH"))))
-  (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/gnuwin32/bin" )))
+  (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/gnuwin32/bin;" (getenv "PATH"))))
+  (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/gnuwin32/bin" )))
 
 ;; ======================== set font ======================
 (if (or (eq system-type 'windows-nt) (eq system-type 'msdos))
@@ -51,6 +51,14 @@
         show-paren-mode))
 
 (fset 'yes-or-no-p 'y-or-n-p)          ;; only y and n
+
+(defalias 'hr 'highlight-regexp)
+(defalias 'uhr 'unhighlight-regexp)
+(defalias 'hf 'hexl-find-file)
+(defalias 'hm 'hexl-mode)
+(defalias 'wm 'whitespace-mode)
+(defalias 'rb 'revert-buffer)
+(defalias 'nb 'rename-buffer)
 
 (server-start)
 
@@ -156,6 +164,15 @@
           (custom-set-variables '(haskell-process-type 'cabal-repl))
           (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
           (add-hook 'haskell-mode-hook 'interactive-haskell-mode))
+  :ensure t)
+
+(use-package slime
+  :commands slime
+  :config (progn
+            (if (eq system-type 'windows-nt)
+                (setq inferior-lisp-program "~/.emacs.d/bin/ccl/wx86cl64.exe")
+              (setq inferior-lisp-program "~/.emacs.d/bin/ccl/lx86cl"))
+            (slime-setup '(slime-fancy)))
   :ensure t)
 
 (use-package copenrelational
