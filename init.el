@@ -115,6 +115,16 @@
   :config (setq w3m-default-display-inline-images t)
   :ensure t)
 
+(use-package hackernews
+  :commands hackernews
+  :init (defalias 'hn 'hackernews)
+  :ensure t)
+
+(use-package twittering-mode
+  :commands twittering-mode
+  :init (defalias 'twit 'twittering-mode)
+  :ensure t)
+  
 (use-package nxml-mode
   :mode (("\\.csproj\\'" . nxml-mode)
          ("\\.fsproj\\'" . nxml-mode)
