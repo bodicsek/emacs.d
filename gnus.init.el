@@ -21,9 +21,9 @@
 (setq gnus-inhibit-images nil)
 
 ;; Automate the fetching of mail.
-(require 'gnus-demon)
+;;(require 'gnus-demon)
 ;; Check for new mail once in every this many minutes.
-(gnus-demon-add-handler 'gnus-demon-scan-news 5 nil)
+;;(gnus-demon-add-handler 'gnus-demon-scan-news 5 nil)
 
 (require 'auth-source)
 (setq auth-sources (cons "~/.emacs.d/gnus.authinfo" auth-sources))

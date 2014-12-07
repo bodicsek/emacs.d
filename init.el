@@ -108,7 +108,13 @@
              magit-status)
   :init (defalias 'gs 'magit-status)
   :ensure t)
-  
+
+(use-package w3m
+  :if (not (eq system-type 'windows-nt))
+  :commands w3m
+  :config (setq w3m-default-display-inline-images t)
+  :ensure t)
+
 (use-package nxml-mode
   :mode (("\\.csproj\\'" . nxml-mode)
          ("\\.fsproj\\'" . nxml-mode)
