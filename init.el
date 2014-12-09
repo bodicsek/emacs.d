@@ -5,7 +5,9 @@
 ;; ======================== set PATH for Windows unix tools  ==============
 (when (or (eq system-type 'windows-nt) (eq system-type 'msdos))
   (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/gnuwin32/bin;" (getenv "PATH"))))
-  (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/gnuwin32/bin" )))
+  (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/gnuwin32/bin"))
+  (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/curl;" (getenv "PATH"))))
+  (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/curl")))
 
 ;; ======================== set font ======================
 (if (or (eq system-type 'windows-nt) (eq system-type 'msdos))
