@@ -7,7 +7,9 @@
   (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/gnuwin32/bin;" (getenv "PATH"))))
   (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/gnuwin32/bin"))
   (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/curl;" (getenv "PATH"))))
-  (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/curl")))
+  (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/curl"))
+  (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/conkeror;" (getenv "PATH"))))
+  (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/conkeror")))
 
 ;; ======================== set font ======================
 (if (or (eq system-type 'windows-nt) (eq system-type 'msdos))
