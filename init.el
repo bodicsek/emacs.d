@@ -102,7 +102,10 @@
             (setq dired-do-highlighting t dired-dwim-target t)
             (add-to-list 'dired-compress-file-suffixes '("\\.zip\\'" ".zip" "unzip"))
             (use-package dired-extensions)
-            (define-key dired-mode-map "z" 'dired-zip-files))
+            (define-key dired-mode-map "z" 'dired-zip-files)
+            (use-package w32-browser
+              :if (eq system-type 'windows-nt)
+              :ensure t))
   :ensure t)
 
 (use-package magit
@@ -120,6 +123,7 @@
 (use-package hackernews
   :commands hackernews
   :init (defalias 'hn 'hackernews)
+  :config (set-face-attribute 'hackernews-link-face nil :foreground "red")
   :ensure t)
 
 (use-package twittering-mode
