@@ -63,6 +63,7 @@
 (defalias 'wm 'whitespace-mode)
 (defalias 'rb 'revert-buffer)
 (defalias 'nb 'rename-buffer)
+(defalias 'br 'browse-url)
 
 (server-start)
 
