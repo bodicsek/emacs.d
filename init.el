@@ -81,10 +81,6 @@
 
 (use-package ibuffer
   :bind ("C-x C-b" . ibuffer))
-
-(use-package moe-theme
-  :idle (load-theme 'moe-light t)
-  :ensure t)
 	     
 (use-package ido
   :init (progn
@@ -92,6 +88,16 @@
           (setq ido-everywhere t)
           (setq ido-auto-merge-work-directories-length -1)
           (ido-mode 1)))
+
+(use-package windmove
+  :bind (("C-x <up>" . windmove-up)
+         ("C-x <down>" . windmove-down)
+         ("C-x <left>" . windmove-left)
+         ("C-x <right>" . windmove-right)))
+
+(use-package moe-theme
+  :idle (load-theme 'moe-light t)
+  :ensure t)
 
 (use-package bm
   :bind (("C-<f2>" . bm-toggle)
