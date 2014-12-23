@@ -178,23 +178,28 @@
   :ensure t)
 
 (use-package haskell-mode
-  :mode (("\\.hs$"  . haskell-mode)
-         ("\\.lhs$" . haskell-mode))
+  :commands haskell-mode
   :init (progn
-          ;; make the cabal binaries available
-          (when (file-directory-p "~/.cabal/bin")
-            (progn 
-              (let ((my-cabal-path (expand-file-name "~/.cabal/bin")))
-                (setenv "PATH" (concat my-cabal-path ":" (getenv "PATH")))
-                (add-to-list 'exec-path my-cabal-path))
-              ;; to be able to use M-. to jump to definitions (requires cabal install hasktags)
-              (custom-set-variables '(haskell-tags-on-save t))))
-          ;; log ghci
-          (custom-set-variables '(haskell-process-log t))
-          ;; use 'cabal repl' to use the cabal sandbox if present
-          (custom-set-variables '(haskell-process-type 'cabal-repl))
-          (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
+          (use-package hi2
+            :defer t
+            :ensure t)
+          (add-hook 'haskell-mode-hook 'turn-on-hi2)
           (add-hook 'haskell-mode-hook 'interactive-haskell-mode))
+  :config (progn
+            ;; make the cabal binaries available
+            (when (file-directory-p "~/.cabal/bin")
+              (progn 
+                (let ((my-cabal-path (expand-file-name "~/.cabal/bin")))
+                  (setenv "PATH" (concat my-cabal-path ":" (getenv "PATH")))
+                  (add-to-list 'exec-path my-cabal-path))
+                ;; to be able to use M-. to jump to definitions (requires cabal install hasktags)
+                (setq haskell-tags-on-save t)
+                ;; M-x haskell-mode-stylish-buffer (requires cabal install stylish-haskell)
+                ))
+            ;; log ghci
+            (setq haskell-process-log t)
+            ;; use 'cabal repl' to use the cabal sandbox if present
+            (setq haskell-process-type 'cabal-repl))
   :ensure t)
 
 (use-package slime
