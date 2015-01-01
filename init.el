@@ -1,6 +1,7 @@
 ;; ======================== add path for the extra libraries ==============
 ;; Emacs Load Path
 (setq load-path (cons "~/.emacs.d/libraries" load-path))
+(setq load-path (cons "~/.emacs.d/libraries/mu4e" load-path))
 
 ;; ======================== set PATH for Windows unix tools  ==============
 (when (or (eq system-type 'windows-nt) (eq system-type 'msdos))
@@ -139,7 +140,63 @@
   :commands twittering-mode
   :init (defalias 'twit 'twittering-mode)
   :ensure t)
-  
+
+(use-package mu4e
+  :if (not (eq system-type 'windows-nt))
+  :commands mu4e
+  :config (progn
+            ;; default
+            ;; (setq mu4e-maildir "~/Maildir")
+            
+            (setq mu4e-drafts-folder "/[Gmail].Drafts")
+            (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
+            (setq mu4e-trash-folder  "/[Gmail].Trash")
+            
+            ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
+            (setq mu4e-sent-messages-behavior 'delete)
+            
+            ;; setup some handy shortcuts
+            ;; you can quickly switch to your Inbox -- press ``ji''
+            ;; then, when you want archive some messages, move them to
+            ;; the 'All Mail' folder by pressing ``ma''.
+            (setq mu4e-maildir-shortcuts
+                  '( ("/INBOX"               . ?i)
+                     ("/[Gmail].Sent Mail"   . ?s)
+                     ("/[Gmail].Trash"       . ?t)
+                     ("/[Gmail].All Mail"    . ?a)))
+
+            ;; allow for updating mail using 'U' in the main view:
+            (setq mu4e-get-mail-command "offlineimap")
+
+            ;; rendering html mails
+            ;; (setq mu4e-html2text-command "w3m -dump -T text/html") ;; requires package w3m
+            ;; (setq mu4e-html2text-command "html2text -utf8 -width 72") ;; requires package html2text
+            ;; (setq mu4e-html2text-command "html2markdown | grep -v '&nbsp_place_holder;'") ;; requires package python-html2text
+            (use-package mu4e-contrib)
+            (setq mu4e-html2text-command 'mu4e-shr2text) ;; requires emacs compiled with libxml2 support
+
+            ;; something about ourselves
+            (setq
+             user-mail-address "david.nabraczky@gmail.com"
+             user-full-name  "David Nabraczky")
+            
+            ;; make sure the gnutls command line utils are installed
+            ;; package 'gnutls-bin' in Debian/Ubuntu
+            (use-package smtpmail
+              :config (setq message-send-mail-function 'smtpmail-send-it
+                            smtpmail-stream-type 'starttls
+                            smtpmail-default-smtp-server "smtp.gmail.com"
+                            smtpmail-smtp-server "smtp.gmail.com"
+                            smtpmail-smtp-service 587))
+
+            ;; show mu4e maildirs summary in mu4e-main-view
+            (use-package mu4e-maildirs-extension
+              :config (mu4e-maildirs-extension)
+              :ensure t)
+            
+            ;; don't keep message buffers around
+            (setq message-kill-buffer-on-exit t)))
+
 (use-package nxml-mode
   :mode (("\\.csproj\\'" . nxml-mode)
          ("\\.fsproj\\'" . nxml-mode)
