@@ -141,20 +141,71 @@
   :init (defalias 'twit 'twittering-mode)
   :ensure t)
 
+(use-package elfeed
+  :commands elfeed
+  :init (defalias 'rss 'elfeed)
+  :config (setq elfeed-feeds
+                '(
+                  "http://hataratkelo.blog.hu/rss2"
+                  "http://www.gog.com/en/frontpage/rss"
+                  "http://emberileg.tumblr.com/rss"
+                  "http://cvikli.tumblr.com/rss"
+                  "http://iddqd.blog.hu/rss2"
+                  "http://szakmailag.tumblr.com/rss"
+                  "http://www.napinemetteszt.com/feed"
+                  "http://mivanvelem.hu/?feed=rss2"
+                  ("http://444.hu/feed/" news)
+                  ("http://cink.hu/rss" news)
+                  ("http://hvg.hu/rss" news)
+                  ("http://www.wired.com/news/feeds/rss2/0,2610,,00.xml" news)
+                  ("http://www.theverge.com/rss/index.xml" news)
+                  ("http://www.hwsw.hu/xml/latest_news_rss.xml" dev news)
+                  ("http://hup.hu/backend_ext.php" dev news)
+                  ("http://rss.slashdot.org/Slashdot/slashdotDevelopers" dev news)
+                  ("https://planet.haskell.org/atom.xml" dev haskell)
+                  ("http://lambda.jstolarek.com/feed/" dev haskell)
+                  ("http://planet.emacsen.org/atom.xml" dev emacs)
+                  ("http://www.masteringemacs.org/feed/" dev emacs)
+                  ("http://planet.lisp.org/rss20.xml" dev lisp)
+                  ("http://plastik.hu/feed/" dev)
+                  ("http://www.joelonsoftware.com/rss.xml" dev)
+                  ("http://www.martinfowler.com/bliki/bliki.atom" dev)
+                  ("http://feeds2.feedburner.com/ElegantCode" dev)
+                  ("http://www.go-mono.com/monologue/index.rss" dev .net)
+                  ("http://blog.gdinwiddie.com/feed/atom/" dev)
+                  ("http://android-developers.blogspot.com/feeds/posts/default?alt=rss" dev android)
+                  ("http://herbsutter.wordpress.com/feed/" dev c++)
+                  ("http://www.i-programmer.info/index.php?option=com_ninjarsssyndicator&feed_id=3&format=raw" dev)
+                  ("http://tifyty.wordpress.com/feed/" dev)
+                  ("http://blogs.msdn.com/oldnewthing/rss.xml" dev windows)
+                  ("http://www.raspberrypi.org/feed" gadget)
+                  ("http://tirania.org/blog/miguel.rss2" dev .net)
+                  ("http://feeds.feedburner.com/JonSkeetCodingBlog" dev .net)
+                  ("http://xach.livejournal.com/data/atom" dev lisp)
+                  ("http://feeds.feedburner.com/codinghorror/" dev)
+                  ("http://mikehadlow.blogspot.com/feeds/posts/default?alt=rss" dev)
+                  ("http://channel9.msdn.com/Feeds/RSS/" dev microsoft)
+                  ("http://queue.acm.org/rss/feeds/queuecontent.xml" dev)
+                  ("http://blog.8thlight.com/feed/atom.xml" dev)
+                  ("http://lambda-the-ultimate.org/rss.xml" dev)
+                  ("http://ericlippert.com/feed/" dev)
+                  ))
+  :ensure t)
+
 (use-package mu4e
   :if (not (eq system-type 'windows-nt))
   :commands mu4e
   :config (progn
             ;; default
             ;; (setq mu4e-maildir "~/Maildir")
-            
+
             (setq mu4e-drafts-folder "/[Gmail].Drafts")
             (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
             (setq mu4e-trash-folder  "/[Gmail].Trash")
-            
+
             ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
             (setq mu4e-sent-messages-behavior 'delete)
-            
+
             ;; setup some handy shortcuts
             ;; you can quickly switch to your Inbox -- press ``ji''
             ;; then, when you want archive some messages, move them to
@@ -168,6 +219,12 @@
             ;; allow for updating mail using 'U' in the main view:
             (setq mu4e-get-mail-command "offlineimap")
 
+            ;; enable inline images
+            (setq mu4e-view-show-images t)
+            ;; use imagemagick, if available
+            (when (fboundp 'imagemagick-register-types)
+              (imagemagick-register-types))
+
             ;; rendering html mails
             ;; (setq mu4e-html2text-command "w3m -dump -T text/html") ;; requires package w3m
             ;; (setq mu4e-html2text-command "html2text -utf8 -width 72") ;; requires package html2text
@@ -179,7 +236,7 @@
             (setq
              user-mail-address "david.nabraczky@gmail.com"
              user-full-name  "David Nabraczky")
-            
+
             ;; make sure the gnutls command line utils are installed
             ;; package 'gnutls-bin' in Debian/Ubuntu
             (use-package smtpmail
@@ -193,7 +250,7 @@
             (use-package mu4e-maildirs-extension
               :config (mu4e-maildirs-extension)
               :ensure t)
-            
+
             ;; don't keep message buffers around
             (setq message-kill-buffer-on-exit t)))
 
