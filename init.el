@@ -156,7 +156,6 @@
                   "http://mivanvelem.hu/?feed=rss2"
                   ("http://444.hu/feed/" news)
                   ("http://cink.hu/rss" news)
-                  ("http://hvg.hu/rss" news)
                   ("http://www.wired.com/news/feeds/rss2/0,2610,,00.xml" news)
                   ("http://www.theverge.com/rss/index.xml" news)
                   ("http://www.hwsw.hu/xml/latest_news_rss.xml" dev news)
