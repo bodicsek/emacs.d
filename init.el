@@ -96,8 +96,13 @@
          ("C-x <left>" . windmove-left)
          ("C-x <right>" . windmove-right)))
 
+(use-package powerline
+  :ensure t)
+
 (use-package moe-theme
-  :idle (load-theme 'moe-light t)
+  :idle (progn
+          (load-theme 'moe-light t)
+          (powerline-moe-theme))
   :ensure t)
 
 (use-package bm
