@@ -118,6 +118,8 @@
             (add-to-list 'dired-compress-file-suffixes '("\\.zip\\'" ".zip" "unzip"))
             (use-package dired-extensions)
             (define-key dired-mode-map "z" 'dired-zip-files)
+            (use-package dired-sort
+              :ensure t)
             (use-package w32-browser
               :if (eq system-type 'windows-nt)
               :ensure t))
