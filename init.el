@@ -80,6 +80,10 @@
 ;; ================================================================
 (use-package cl-lib)
 
+(use-package vlf
+  :config (require 'vlf-setup)
+  :ensure t)
+
 (use-package ibuffer
   :bind ("C-x C-b" . ibuffer))
 	     
