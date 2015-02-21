@@ -261,6 +261,8 @@
               :config (mu4e-maildirs-extension)
               :ensure t)
 
+            (setq mu4e-hide-index-messages t)
+            
             ;; don't keep message buffers around
             (setq message-kill-buffer-on-exit t)))
 
