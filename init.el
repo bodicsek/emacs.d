@@ -4,13 +4,15 @@
 (setq load-path (cons "~/.emacs.d/libraries/mu4e" load-path))
 
 ;; ======================== set PATH for Windows unix tools  ==============
-(when (or (eq system-type 'windows-nt) (eq system-type 'msdos))
-  (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/gnuwin32/bin;" (getenv "PATH"))))
-  (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/gnuwin32/bin"))
-  (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/curl;" (getenv "PATH"))))
-  (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/curl"))
-  (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/conkeror;" (getenv "PATH"))))
-  (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/conkeror")))
+(if (or (eq system-type 'windows-nt) (eq system-type 'msdos))
+    (progn (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/gnuwin32/bin;" (getenv "PATH"))))
+           (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/gnuwin32/bin"))
+           (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/curl;" (getenv "PATH"))))
+           (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/curl"))
+           (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/conkeror/windows;" (getenv "PATH"))))
+           (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/conkeror/windows")))
+  (progn (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/conkeror/linux;" (getenv "PATH"))))
+         (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/conkeror/linux"))))
 
 ;; ======================== set font ======================
 (if (or (eq system-type 'windows-nt) (eq system-type 'msdos))
@@ -104,9 +106,9 @@
   :ensure t)
 
 (use-package moe-theme
-  :idle (progn
-          (load-theme 'moe-light t)
-          (powerline-moe-theme))
+  :config (progn
+            (load-theme 'moe-dark t)
+            (powerline-moe-theme))
   :ensure t)
 
 (use-package bm
@@ -116,8 +118,8 @@
   :ensure t)
 
 (use-package dired+
-  :init (put 'dired-find-alternate-file 'disabled nil)
   :config (progn
+            (put 'dired-find-alternate-file 'disabled nil)
             (setq dired-do-highlighting t dired-dwim-target t)
             (add-to-list 'dired-compress-file-suffixes '("\\.zip\\'" ".zip" "unzip"))
             (use-package dired-extensions)
@@ -133,6 +135,25 @@
   :commands (magit-init
              magit-status)
   :init (defalias 'gs 'magit-status)
+  :ensure t)
+
+(use-package org
+  :commands org-mode
+  :config (let ((dropbox-org-dir "~/Dropbox/Notes")
+                (dropbox-mobileorg-dir "~/Dropbox/MobileOrg")
+                (dropbox-mobileorg-pullfile "~/Dropbox/Notes/from_mobile.org"))
+            (setq org-directory dropbox-org-dir)
+            (setq org-agenda-files (list dropbox-org-dir))
+            (setq org-mobile-directory dropbox-mobileorg-dir)
+            (setq org-mobile-inbox-for-pull dropbox-mobileorg-pullfile))
+  :ensure t)
+
+(use-package deft
+  :commands deft
+  :config (progn
+            (setq deft-extension "org")
+            (setq deft-directory "~/Dropbox/Notes")
+            (setq deft-text-mode 'org-mode))
   :ensure t)
 
 (use-package w3m
@@ -314,7 +335,7 @@
   :config (progn
             ;; make the cabal binaries available
             (when (file-directory-p "~/.cabal/bin")
-              (progn 
+              (progn
                 (let ((my-cabal-path (expand-file-name "~/.cabal/bin")))
                   (setenv "PATH" (concat my-cabal-path ":" (getenv "PATH")))
                   (add-to-list 'exec-path my-cabal-path))
