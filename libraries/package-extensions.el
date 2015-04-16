@@ -2,7 +2,7 @@
 ;; TODO: update credits
 
 (defun install-required-packages (package-list)
-  ;;(package-refresh-contents)
+  (package-refresh-contents)
   (mapc
    (lambda (package) 
      (unless (require package nil t)

@@ -145,7 +145,8 @@
             (setq org-directory dropbox-org-dir)
             (setq org-agenda-files (list dropbox-org-dir))
             (setq org-mobile-directory dropbox-mobileorg-dir)
-            (setq org-mobile-inbox-for-pull dropbox-mobileorg-pullfile))
+            (setq org-mobile-inbox-for-pull dropbox-mobileorg-pullfile)
+            (setq org-todo-keywords '((sequence "TODO" "ACTIVE" "|" "DONE"))))
   :ensure t)
 
 (use-package deft
@@ -327,11 +328,36 @@
 (use-package haskell-mode
   :commands haskell-mode
   :init (progn
+          ;; key bingings
+          (eval-after-load 'haskell-mode
+            '(progn
+               (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
+               (define-key haskell-mode-map (kbd "C-c C-z") 'haskell-interactive-switch)
+               (define-key haskell-mode-map (kbd "C-c C-n C-t") 'haskell-process-do-type)
+               (define-key haskell-mode-map (kbd "C-c C-n C-i") 'haskell-process-do-info)
+               (define-key haskell-mode-map (kbd "C-c C-n C-c") 'haskell-process-cabal-build)
+               (define-key haskell-mode-map (kbd "C-c C-n c") 'haskell-process-cabal)
+               (define-key haskell-mode-map (kbd "SPC") 'haskell-mode-contextual-space)
+               (define-key haskell-mode-map (kbd "C-c C-o") 'haskell-compile)))
+          (eval-after-load 'haskell-cabal
+            '(progn
+               (define-key haskell-cabal-mode-map (kbd "C-c C-z") 'haskell-interactive-switch)
+               (define-key haskell-cabal-mode-map (kbd "C-c C-k") 'haskell-interactive-mode-clear)
+               (define-key haskell-cabal-mode-map (kbd "C-c C-c") 'haskell-process-cabal-build)
+               (define-key haskell-cabal-mode-map (kbd "C-c c") 'haskell-process-cabal)
+               (define-key haskell-cabal-mode-map (kbd "C-c C-o") 'haskell-compile)))
+          ;; intendation
           (use-package hi2
             :defer t
+            :init (progn
+                    (add-hook 'haskell-mode-hook 'turn-on-hi2)
+                    (add-hook 'haskell-mode-hook 'interactive-haskell-mode))
             :ensure t)
-          (add-hook 'haskell-mode-hook 'turn-on-hi2)
-          (add-hook 'haskell-mode-hook 'interactive-haskell-mode))
+          ;; ghc-mod (requires cabal install ghc-mod)
+          (use-package ghc
+            :commands (ghc-init ghc-debug)
+            :init (add-hook 'haskell-mode-hook (lambda () (ghc-init)))
+            :ensure t))
   :config (progn
             ;; make the cabal binaries available
             (when (file-directory-p "~/.cabal/bin")
@@ -340,6 +366,7 @@
                   (setenv "PATH" (concat my-cabal-path ":" (getenv "PATH")))
                   (add-to-list 'exec-path my-cabal-path))
                 ;; to be able to use M-. to jump to definitions (requires cabal install hasktags)
+                ;; and the files must be in a cabal project
                 (setq haskell-tags-on-save t)
                 ;; M-x haskell-mode-stylish-buffer (requires cabal install stylish-haskell)
                 ))
