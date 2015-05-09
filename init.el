@@ -104,7 +104,7 @@
   :ensure t)
 
 (use-package ibuffer
-  :bind ("C-x C-b" . ibuffer))
+  :bind ("C-x C-b" . ibuffer-bs-show))
 	     
 (use-package ido
   :init (progn
