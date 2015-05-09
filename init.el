@@ -230,10 +230,10 @@
 (use-package magit
   :commands (magit-init
              magit-status)
-  :init (defalias 'gs 'magit-status)
-  :config (progn
-            (setq magit-completing-read-function 'magit-ido-completing-read)
-            (setq magit-last-seen-setup-instructions "1.4.0"))
+  :init (progn
+          (defalias 'gs 'magit-status)
+          (setq magit-completing-read-function 'magit-ido-completing-read)
+          (setq magit-last-seen-setup-instructions "1.4.0"))
   :ensure t)
 
 (use-package deft
