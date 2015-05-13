@@ -2,6 +2,7 @@
 ;; Emacs Load Path
 (setq load-path (cons "~/.emacs.d/libraries" load-path))
 (setq load-path (cons "~/.emacs.d/libraries/mu4e" load-path))
+(setq load-path (cons "~/.emacs.d/libraries/mingus" load-path))
 
 ;; ======================== set PATH for Windows unix tools  ==============
 (if (or (eq system-type 'windows-nt) (eq system-type 'msdos))
@@ -104,7 +105,7 @@
   :ensure t)
 
 (use-package ibuffer
-  :bind ("C-x C-b" . ibuffer-bs-show))
+  :bind ("C-x C-b" . ibuffer))
 	     
 (use-package ido
   :init (progn
@@ -124,9 +125,6 @@
               :ensure t)
             (use-package ido-ubiquitous
               :config (ido-ubiquitous-mode 1)
-              :ensure t)
-            (use-package ido-vertical-mode
-              :config (ido-vertical-mode 1)
               :ensure t)))
 
 (use-package bm
@@ -318,6 +316,11 @@
                   ))
   :ensure t)
 
+(use-package mingus
+  :if (not (eq system-type 'windows-nt))
+  :commands (mingus
+             mingus-help))
+
 (use-package mu4e
   :if (not (eq system-type 'windows-nt))
   :commands mu4e
@@ -341,6 +344,12 @@
                      ("/[Gmail].Sent Mail"   . ?s)
                      ("/[Gmail].Trash"       . ?t)
                      ("/[Gmail].All Mail"    . ?a)))
+
+            ;; appending own bookmarks
+            ;; to invoke a search bookmark press b and letter defined here
+            (add-to-list 'mu4e-bookmarks
+                         '("flag:flagged" "Flagged messages" ?f)
+                         t)
 
             ;; allow for updating mail using 'U' in the main view:
             (setq mu4e-get-mail-command "offlineimap")
