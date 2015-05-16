@@ -12,7 +12,7 @@
            (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/curl"))
            (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/conkeror/windows;" (getenv "PATH"))))
            (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/conkeror/windows")))
-  (progn (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/conkeror/linux;" (getenv "PATH"))))
+  (progn (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/conkeror/linux:" (getenv "PATH"))))
          (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/conkeror/linux"))))
 
 ;; ======================== set font ======================
@@ -95,18 +95,14 @@
          ("C-x <left>" . windmove-left)
          ("C-x <right>" . windmove-right)))
 
-(use-package powerline
-  :ensure t)
-
 (use-package moe-theme
   :config (progn
-            (load-theme 'moe-dark t)
-            (powerline-moe-theme))
+            (load-theme 'moe-dark t))
   :ensure t)
 
 (use-package ibuffer
   :bind ("C-x C-b" . ibuffer))
-	     
+
 (use-package ido
   :init (progn
           (setq ido-everywhere t)
@@ -151,8 +147,41 @@
   :config (require 'vlf-setup)
   :ensure t)
 
+(use-package company
+  :commands company-mode
+  :bind ("C-SPC" . company-complete)
+  :init (add-hook 'after-init-hook 'global-company-mode)
+  :config (use-package company-ghc
+            :config (progn
+                      (add-to-list 'company-backends 'company-ghc)
+                      (setq company-ghc-show-info t))
+            :ensure t)
+  :ensure t)
+
 (use-package projectile
+  :bind ("C-c p C-b" . projectile-ibuffer)
   :config (projectile-global-mode)
+  :ensure t)
+
+(use-package skeletor
+  :commands (skeletor-create-project
+             skeletor-create-project-at)
+  :bind ("C-c p n" . skeletor-create-project-at)
+  :config (progn
+            (setq skeletor-init-with-git nil)
+
+            (add-to-list 'skeletor-global-substitutions '("__AUTHOR__" . "bodicsek"))
+
+            (skeletor-define-template "haskell-lib-project"
+              :title "Haskell library project"
+              :substitutions '(("__SYNOPSIS__" . (lambda () (read-string "Synopsis: "))))
+              :after-creation (lambda (dir)
+                                (skeletor-shell-command "cabal sandbox init")))
+            (skeletor-define-template "haskell-lib-test-project"
+              :title "Haskell library and test-suite project"
+              :substitutions '(("__SYNOPSIS__" . (lambda () (read-string "Synopsis: "))))
+              :after-creation (lambda (dir)
+                                (skeletor-shell-command "cabal sandbox init"))))
   :ensure t)
 
 (use-package nxml-mode
