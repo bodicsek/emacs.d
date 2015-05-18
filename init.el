@@ -77,7 +77,14 @@
 (require 'package-extensions)
 (package-initialize)
 (mapc (lambda (p) (push p package-archives))
-      '(("melpa" . "http://melpa.org/packages/")))
+      '(("melpa"        . "http://melpa.org/packages/")
+        ("melpa-stable" . "http://stable.melpa.org/packages/")))
+(setq package-pinned-packages
+      '((haskell-mode . "melpa-stable")
+        (hindent      . "melpa-stable")
+        (shm          . "melpa-stable")
+        (ghc          . "melpa-stable")
+        (company-ghc  . "melpa-stable")))
 (install-required-packages '(use-package))
 (require 'use-package)
 
@@ -151,11 +158,6 @@
   :commands company-mode
   :bind ("C-SPC" . company-complete)
   :init (add-hook 'after-init-hook 'global-company-mode)
-  :config (use-package company-ghc
-            :config (progn
-                      (add-to-list 'company-backends 'company-ghc)
-                      (setq company-ghc-show-info t))
-            :ensure t)
   :ensure t)
 
 (use-package projectile
@@ -179,6 +181,11 @@
                                 (skeletor-shell-command "cabal sandbox init")))
             (skeletor-define-template "haskell-lib-test-project"
               :title "Haskell library and test-suite project"
+              :substitutions '(("__SYNOPSIS__" . (lambda () (read-string "Synopsis: "))))
+              :after-creation (lambda (dir)
+                                (skeletor-shell-command "cabal sandbox init")))
+            (skeletor-define-template "haskell-exe-lib-test-project"
+              :title "Haskell executable, library and test-suite project"
               :substitutions '(("__SYNOPSIS__" . (lambda () (read-string "Synopsis: "))))
               :after-creation (lambda (dir)
                                 (skeletor-shell-command "cabal sandbox init"))))
@@ -224,17 +231,26 @@
 (use-package haskell-mode
   :commands haskell-mode
   :init (progn
-          ;; intendation
-          (use-package hi2
-            :defer t
+          (use-package hindent
+            :ensure t)
+          (use-package shm
             :init (progn
-                    (add-hook 'haskell-mode-hook 'turn-on-hi2)
-                    (add-hook 'haskell-mode-hook 'interactive-haskell-mode))
+                    (add-hook 'haskell-mode-hook 'structured-haskell-mode))
+            :config (progn
+                      ;;(set-face-background 'shm-current-face "#eee8d5")
+                      ;;(set-face-background 'shm-quarantine-face "lemonchiffon")
+                      )
             :ensure t)
           ;; ghc-mod (requires cabal install ghc-mod)
           (use-package ghc
             :commands (ghc-init ghc-debug)
             :init (add-hook 'haskell-mode-hook (lambda () (ghc-init)))
+            :ensure t)
+          ;; company-ghc (requires cabal install ghc-mod)
+          (use-package company-ghc
+            :config (progn
+                      (add-to-list 'company-backends 'company-ghc)
+                      (setq company-ghc-show-info t))
             :ensure t))
   :config (progn
             ;; make the cabal binaries available
@@ -273,9 +289,9 @@
 
 (use-package org
   :commands org-mode
-  :config (let ((dropbox-org-dir )
+  :config (let ((dropbox-org-dir "~/Dropbox/Notes")
                 (dropbox-mobileorg-dir "~/Dropbox/MobileOrg")
-                (dropbox-mobileorg-pullfile "~/Dropbox/Notes/from_mobile.org"))
+                (dropbox-mobileorg-pullfile "~/Dropbox/Notes/links.org"))
             (setq org-directory dropbox-org-dir)
             (setq org-agenda-files (list dropbox-org-dir))
             (setq org-mobile-directory dropbox-mobileorg-dir)
