@@ -102,9 +102,19 @@
          ("C-x <left>" . windmove-left)
          ("C-x <right>" . windmove-right)))
 
-(use-package moe-theme
+;; (use-package moe-theme
+;;   :config (progn
+;;             (load-theme 'moe-dark t))
+;;   :ensure t)
+
+;; (use-package flatui-theme
+;;   :config (progn
+;;             (load-theme 'flatui t))
+;;   :ensure t)
+
+(use-package leuven-theme
   :config (progn
-            (load-theme 'moe-dark t))
+            (load-theme 'leuven t))
   :ensure t)
 
 (use-package ibuffer
