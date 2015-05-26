@@ -114,7 +114,9 @@
 
 (use-package leuven-theme
   :config (progn
-            (load-theme 'leuven t))
+            (load-theme 'leuven t)
+            (set-face-attribute 'hl-line nil
+                                :background "powder blue"))
   :ensure t)
 
 (use-package ibuffer
@@ -172,7 +174,7 @@
 
 (use-package projectile
   :bind ("C-c p C-b" . projectile-ibuffer)
-  :config (projectile-global-mode)
+  :init (projectile-global-mode)
   :ensure t)
 
 (use-package skeletor
