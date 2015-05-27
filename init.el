@@ -374,7 +374,6 @@
   :ensure t)
 
 (use-package mingus
-  :if (not (eq system-type 'windows-nt))
   :commands (mingus
              mingus-help))
 
