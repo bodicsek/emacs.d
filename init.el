@@ -61,6 +61,8 @@
 
 (fset 'yes-or-no-p 'y-or-n-p)          ;; only y and n
 
+(global-set-key (kbd "M--") 'pop-tag-mark)
+
 (defalias 'hr 'highlight-regexp)
 (defalias 'uhr 'unhighlight-regexp)
 (defalias 'hf 'hexl-find-file)
@@ -92,6 +94,7 @@
 (use-package cl-lib)
 
 (use-package eyebrowse
+  :bind      ("C-c e" . eyebrowse-mode)
   :commands  eyebrowse-mode
   :config    (setq eyebrowse-new-workspace t)
   :ensure    t)
@@ -101,16 +104,6 @@
          ("C-x <down>" . windmove-down)
          ("C-x <left>" . windmove-left)
          ("C-x <right>" . windmove-right)))
-
-;; (use-package moe-theme
-;;   :config (progn
-;;             (load-theme 'moe-dark t))
-;;   :ensure t)
-
-;; (use-package flatui-theme
-;;   :config (progn
-;;             (load-theme 'flatui t))
-;;   :ensure t)
 
 (use-package leuven-theme
   :config (progn
@@ -201,6 +194,17 @@
               :substitutions '(("__SYNOPSIS__" . (lambda () (read-string "Synopsis: "))))
               :after-creation (lambda (dir)
                                 (skeletor-shell-command "cabal sandbox init"))))
+  :ensure t)
+
+(use-package paredit
+  :commands enable-paredit-mode
+  :init (progn
+          (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
+          (add-hook 'lisp-mode-hook 'enable-paredit-mode)
+          (add-hook 'lisp-interaction-mode-hook 'enable-paredit-mode))
+  :config (progn
+            (use-package paredit-menu
+              :ensure t))
   :ensure t)
 
 (use-package nxml-mode
