@@ -337,6 +337,9 @@
             :ensure t)
           ;; ghc-mod (requires cabal install ghc-mod)
           (use-package ghc
+            :if (if (not (eq system-type 'windows-nt))
+                    (file-exists-p "~/.cabal/bin/ghc-mod")
+                  (file-exists-p "~/.cabal/bin/ghc-mod.exe"))
             :commands (ghc-init ghc-debug)
             :init (add-hook 'haskell-mode-hook (lambda () (ghc-init)))
             :ensure t))
