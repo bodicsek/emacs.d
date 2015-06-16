@@ -479,7 +479,12 @@
                (use-package request
                  :ensure t)
                (use-package libmpdee
-                 :ensure t)))
+                 :ensure t)
+               (if (or (eq system-type 'windows-nt) (eq system-type 'msdos))
+                   (add-hook 'g-music-mode-hook
+                             '(lambda ()
+                                (setq *g-music-proxy-process*
+                                      "c:/tools/python2/python.exe c:/tools/python2/Scripts/GMusicProxy --conf c:/Users/DNabraczky/.gmusicproxy.cfg"))))))
 
 (use-package copenrelational
   :bind ("<f4>" . c-open-relational-file))
