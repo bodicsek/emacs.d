@@ -1,7 +1,6 @@
 ;; ======================== add path for the extra libraries ==============
 ;; Emacs Load Path
 (setq load-path (cons "~/.emacs.d/libraries" load-path))
-(setq load-path (cons "~/.emacs.d/libraries/mu4e" load-path))
 
 ;; ======================== set PATH for Windows unix tools  ==============
 (if (or (eq system-type 'windows-nt) (eq system-type 'msdos))
@@ -11,7 +10,7 @@
            (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/curl"))
            (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/conkeror/windows;" (getenv "PATH"))))
            (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/conkeror/windows")))
-  (progn (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/conkeror/linux;" (getenv "PATH"))))
+  (progn (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/conkeror/linux:" (getenv "PATH"))))
          (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/conkeror/linux"))))
 
 ;; ======================== set font ======================
@@ -55,9 +54,12 @@
         global-linum-mode
         menu-bar-mode
         delete-selection-mode
-        show-paren-mode))
+        show-paren-mode
+        winner-mode))
 
 (fset 'yes-or-no-p 'y-or-n-p)          ;; only y and n
+
+(global-set-key (kbd "M--") 'pop-tag-mark)
 
 (defalias 'hr 'highlight-regexp)
 (defalias 'uhr 'unhighlight-regexp)
@@ -75,26 +77,29 @@
 (require 'package-extensions)
 (package-initialize)
 (mapc (lambda (p) (push p package-archives))
-      '(("melpa" . "http://melpa.org/packages/")))
+      '(("melpa"        . "http://melpa.org/packages/")
+        ("melpa-stable" . "http://stable.melpa.org/packages/")))
+(setq package-pinned-packages
+      '((haskell-mode . "melpa-stable")
+        (hindent      . "melpa-stable")
+        (shm          . "melpa-stable")
+        (ghc          . "melpa-stable")
+        (company-ghc  . "melpa-stable")))
 (install-required-packages '(use-package))
 (require 'use-package)
 
 ;; ================================================================
 (use-package cl-lib)
 
-(use-package vlf
-  :config (require 'vlf-setup)
+(use-package try
+  :commands try
   :ensure t)
 
-(use-package ibuffer
-  :bind ("C-x C-b" . ibuffer))
-	     
-(use-package ido
-  :init (progn
-          (setq ido-enable-flex-matching t)
-          (setq ido-everywhere t)
-          (setq ido-auto-merge-work-directories-length -1)
-          (ido-mode 1)))
+(use-package eyebrowse
+  :bind      ("C-c e" . eyebrowse-mode)
+  :commands  eyebrowse-mode
+  :config    (setq eyebrowse-new-workspace t)
+  :ensure    t)
 
 (use-package windmove
   :bind (("C-x <up>" . windmove-up)
@@ -102,14 +107,35 @@
          ("C-x <left>" . windmove-left)
          ("C-x <right>" . windmove-right)))
 
-(use-package powerline
+(use-package leuven-theme
+  :config (progn
+            (load-theme 'leuven t)
+            (set-face-attribute 'hl-line nil
+                                :background "powder blue"))
   :ensure t)
 
-(use-package moe-theme
+(use-package ibuffer
+  :bind ("C-x C-b" . ibuffer))
+
+(use-package ido
+  :init (progn
+          (setq ido-everywhere t)
+          (setq ido-enable-flex-matching t)
+          (setq ido-auto-merge-work-directories-length -1)
+          (setq ido-use-faces nil))
   :config (progn
-            (load-theme 'moe-dark t)
-            (powerline-moe-theme))
-  :ensure t)
+            (ido-mode 1)
+            (use-package flx-ido
+              :config (flx-ido-mode 1)
+              :ensure t)
+            (use-package smex
+              :bind (("M-x" . smex)
+                     ("M-X" . smex-major-mode-commands)
+                     ("C-c C-c M-x" . execute-extended-command))
+              :ensure t)
+            (use-package ido-ubiquitous
+              :config (ido-ubiquitous-mode 1)
+              :ensure t)))
 
 (use-package bm
   :bind (("C-<f2>" . bm-toggle)
@@ -131,22 +157,164 @@
               :ensure t))
   :ensure t)
 
+(use-package vlf
+  :config (require 'vlf-setup)
+  :ensure t)
+
+(use-package company
+  :commands company-mode
+  :bind ("C-SPC" . company-complete)
+  :init (add-hook 'after-init-hook 'global-company-mode)
+  :ensure t)
+
+(use-package projectile
+  :bind ("C-c p C-b" . projectile-ibuffer)
+  :init (projectile-global-mode)
+  :ensure t)
+
+(use-package skeletor
+  :commands (skeletor-create-project
+             skeletor-create-project-at)
+  :bind ("C-c p n" . skeletor-create-project-at)
+  :config (progn
+            (setq skeletor-init-with-git nil)
+
+            (add-to-list 'skeletor-global-substitutions '("__AUTHOR__" . "bodicsek"))
+
+            (skeletor-define-template "haskell-lib-project"
+              :title "Haskell library project"
+              :substitutions '(("__SYNOPSIS__" . (lambda () (read-string "Synopsis: "))))
+              :after-creation (lambda (dir)
+                                (skeletor-shell-command "cabal sandbox init")))
+            (skeletor-define-template "haskell-lib-test-project"
+              :title "Haskell library and test-suite project"
+              :substitutions '(("__SYNOPSIS__" . (lambda () (read-string "Synopsis: "))))
+              :after-creation (lambda (dir)
+                                (skeletor-shell-command "cabal sandbox init")))
+            (skeletor-define-template "haskell-exe-lib-test-project"
+              :title "Haskell executable, library and test-suite project"
+              :substitutions '(("__SYNOPSIS__" . (lambda () (read-string "Synopsis: "))))
+              :after-creation (lambda (dir)
+                                (skeletor-shell-command "cabal sandbox init"))))
+  :ensure t)
+
+(use-package overseer
+  :ensure t)
+
+(use-package paredit
+  :commands enable-paredit-mode
+  :init (progn
+          (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
+          (add-hook 'lisp-mode-hook 'enable-paredit-mode)
+          (add-hook 'lisp-interaction-mode-hook 'enable-paredit-mode))
+  :config (progn
+            (use-package paredit-menu
+              :ensure t)
+            (define-key paredit-mode-map (kbd "C-<right>") 'paredit-forward)
+            (define-key paredit-mode-map (kbd "C-<left>") 'paredit-backward)
+            (define-key paredit-mode-map (kbd "C-<up>") 'paredit-backward-up)
+            (define-key paredit-mode-map (kbd "C-<down>") 'paredit-forward-down)
+            (define-key paredit-mode-map (kbd "C-M-<right>") 'paredit-forward-slurp-sexp)
+            (define-key paredit-mode-map (kbd "C-M-<left>") 'paredit-forward-barf-sexp)
+            (define-key paredit-mode-map (kbd "C-M-<up>") 'paredit-backward-slurp-sexp)
+            (define-key paredit-mode-map (kbd "C-M-<down>") 'paredit-backward-barf-sexp))
+  :ensure t)
+
+(use-package nxml-mode
+  :mode (("\\.csproj\\'" . nxml-mode)
+         ("\\.fsproj\\'" . nxml-mode)
+         ("\\.xaml\\'"   . nxml-mode))
+  :config (use-package nxml-extensions))
+
+(use-package octave-mode
+  :mode ("\\.m$" . octave-mode))
+
+(use-package csharp-mode
+  :mode ("\\.cs\\'" . csharp-mode)
+  :config (progn
+            (setq csharp-want-flymake-fixup nil) ;; no flymake
+            (use-package omnisharp
+              :config (progn
+                        ;; (setq omnisharp-debug t)
+                        (setq omnisharp-server-executable-path "~/.emacs.d/bin/omnisharp-server/OmniSharp.exe")
+                        (define-key csharp-mode-map (kbd "C-o <f12>") 'omnisharp-go-to-definition)
+                        (define-key csharp-mode-map (kbd "C-o C-<f12>") 'omnisharp-find-implementations)
+                        (define-key csharp-mode-map (kbd "C-o M-S-<f12>") 'omnisharp-find-usages)
+                        (define-key csharp-mode-map (kbd "C-o <f6>") 'omnisharp-build-in-emacs)
+                        (define-key csharp-mode-map (kbd "C-o C-S-t") 'omnisharp-navigate-to-solution-file)
+                        (define-key csharp-mode-map (kbd "C-o C-t") 'omnisharp-navigate-to-solution-member)
+                        (define-key csharp-mode-map (kbd "C-o M-ß") 'omnisharp-navigate-to-current-file-member)
+                        (define-key csharp-mode-map (kbd "C-o C-SPC") 'omnisharp-auto-complete)
+                        (define-key csharp-mode-map (kbd "C-o C-k C-d") 'omnisharp-code-format)
+                        (define-key csharp-mode-map (kbd "C-o C-S-r") 'omnisharp-run-code-action-refactoring)
+                        (define-key csharp-mode-map (kbd "C-o C-r C-r") 'omnisharp-rename-interactively)
+                        (define-key csharp-mode-map (kbd "C-o C-u C-u") '(lambda() (interactive) (omnisharp-unit-test "single")))
+                        (define-key csharp-mode-map (kbd "C-o C-u C-f") '(lambda() (interactive) (omnisharp-unit-test "fixture")))
+                        (define-key csharp-mode-map (kbd "C-o C-u C-a") '(lambda() (interactive) (omnisharp-unit-test "all")))
+                        )
+              :ensure t)
+            (when (file-exists-p omnisharp-server-executable-path)
+              (omnisharp-mode)))
+  :ensure t)
+
+(use-package haskell-mode
+  :commands haskell-mode
+  :init (progn
+          (use-package hindent
+            :ensure t)
+          (use-package shm
+            :init (progn
+                    (add-hook 'haskell-mode-hook 'structured-haskell-mode))
+            :config (progn
+                      ;;(set-face-background 'shm-current-face "#eee8d5")
+                      ;;(set-face-background 'shm-quarantine-face "lemonchiffon")
+                      )
+            :ensure t)
+          ;; ghc-mod (requires cabal install ghc-mod)
+          (use-package ghc
+            :commands (ghc-init ghc-debug)
+            :init (add-hook 'haskell-mode-hook (lambda () (ghc-init)))
+            :ensure t)
+          ;; company-ghc (requires cabal install ghc-mod)
+          (use-package company-ghc
+            :config (progn
+                      (add-to-list 'company-backends 'company-ghc)
+                      (setq company-ghc-show-info t))
+            :ensure t))
+  :config (progn
+            ;; make the cabal binaries available
+            (when (file-directory-p "~/.cabal/bin")
+              (progn
+                (let ((my-cabal-path (expand-file-name "~/.cabal/bin")))
+                  (setenv "PATH" (concat my-cabal-path ":" (getenv "PATH")))
+                  (add-to-list 'exec-path my-cabal-path))
+                ;; to be able to use M-. to jump to definitions (requires cabal install hasktags)
+                ;; and the files must be in a cabal project
+                (setq haskell-tags-on-save t)
+                ;; M-x haskell-mode-stylish-buffer (requires cabal install stylish-haskell)
+                ))
+            ;; log ghci
+            (setq haskell-process-log t)
+            ;; use 'cabal repl' to use the cabal sandbox if present
+            (setq haskell-process-type 'cabal-repl))
+  :ensure t)
+
+(use-package slime
+  :commands slime
+  :config (progn
+            (if (eq system-type 'windows-nt)
+                (setq inferior-lisp-program "~/.emacs.d/bin/ccl/wx86cl64.exe")
+              (setq inferior-lisp-program "~/.emacs.d/bin/ccl/lx86cl"))
+            (slime-setup '(slime-fancy)))
+  :ensure t)
+
 (use-package magit
   :commands (magit-init
              magit-status)
-  :init (defalias 'gs 'magit-status)
-  :ensure t)
-
-(use-package org
-  :commands org-mode
-  :config (let ((dropbox-org-dir "~/Dropbox/Notes")
-                (dropbox-mobileorg-dir "~/Dropbox/MobileOrg")
-                (dropbox-mobileorg-pullfile "~/Dropbox/Notes/from_mobile.org"))
-            (setq org-directory dropbox-org-dir)
-            (setq org-agenda-files (list dropbox-org-dir))
-            (setq org-mobile-directory dropbox-mobileorg-dir)
-            (setq org-mobile-inbox-for-pull dropbox-mobileorg-pullfile)
-            (setq org-todo-keywords '((sequence "TODO" "ACTIVE" "|" "DONE"))))
+  :init (progn
+          (defalias 'gs 'magit-status)
+          (setq magit-completing-read-function 'magit-ido-completing-read)
+          (setq magit-last-seen-setup-instructions "1.4.0"))
   :ensure t)
 
 (use-package deft
@@ -157,10 +325,17 @@
             (setq deft-text-mode 'org-mode))
   :ensure t)
 
-(use-package w3m
-  :if (not (eq system-type 'windows-nt))
-  :commands w3m
-  :config (setq w3m-default-display-inline-images t)
+(use-package org
+  :commands org-mode
+  :config (let ((dropbox-org-dir "~/Dropbox/Notes")
+                (dropbox-mobileorg-dir "~/Dropbox/MobileOrg")
+                (dropbox-mobileorg-pullfile "~/Dropbox/Notes/links.org"))
+            (setq org-directory dropbox-org-dir)
+            (setq org-agenda-files (list dropbox-org-dir))
+            (setq org-mobile-directory dropbox-mobileorg-dir)
+            (setq org-mobile-inbox-for-pull dropbox-mobileorg-pullfile)
+            (setq org-todo-keywords '((sequence "TODO" "ACTIVE" "|" "DONE")))
+            (setq org-completion-use-ido t))
   :ensure t)
 
 (use-package hackernews
@@ -226,6 +401,7 @@
 
 (use-package mu4e
   :if (not (eq system-type 'windows-nt))
+  :load-path "~/.emacs.d/libraries/mu4e"
   :commands mu4e
   :config (progn
             ;; default
@@ -247,6 +423,12 @@
                      ("/[Gmail].Sent Mail"   . ?s)
                      ("/[Gmail].Trash"       . ?t)
                      ("/[Gmail].All Mail"    . ?a)))
+
+            ;; appending own bookmarks
+            ;; to invoke a search bookmark press b and letter defined here
+            (add-to-list 'mu4e-bookmarks
+                         '("flag:flagged" "Flagged messages" ?f)
+                         t)
 
             ;; allow for updating mail using 'U' in the main view:
             (setq mu4e-get-mail-command "offlineimap")
@@ -288,87 +470,21 @@
             ;; don't keep message buffers around
             (setq message-kill-buffer-on-exit t)))
 
-(use-package nxml-mode
-  :mode (("\\.csproj\\'" . nxml-mode)
-         ("\\.fsproj\\'" . nxml-mode)
-         ("\\.xaml\\'"   . nxml-mode))
-  :config (use-package nxml-extensions))
-
-(use-package octave-mode
-  :mode ("\\.m$" . octave-mode))
-
-(use-package csharp-mode
-  :mode ("\\.cs\\'" . csharp-mode)
-  :config (progn
-            (setq csharp-want-flymake-fixup nil) ;; no flymake
-            (use-package omnisharp
-              :config (progn
-                        ;; (setq omnisharp-debug t)
-                        (setq omnisharp-server-executable-path "~/.emacs.d/bin/omnisharp-server/OmniSharp.exe")
-                        (define-key csharp-mode-map (kbd "C-o <f12>") 'omnisharp-go-to-definition)
-                        (define-key csharp-mode-map (kbd "C-o C-<f12>") 'omnisharp-find-implementations)
-                        (define-key csharp-mode-map (kbd "C-o M-S-<f12>") 'omnisharp-find-usages)
-                        (define-key csharp-mode-map (kbd "C-o <f6>") 'omnisharp-build-in-emacs)
-                        (define-key csharp-mode-map (kbd "C-o C-S-t") 'omnisharp-navigate-to-solution-file)
-                        (define-key csharp-mode-map (kbd "C-o C-t") 'omnisharp-navigate-to-solution-member)
-                        (define-key csharp-mode-map (kbd "C-o M-ß") 'omnisharp-navigate-to-current-file-member)
-                        (define-key csharp-mode-map (kbd "C-o C-SPC") 'omnisharp-auto-complete)
-                        (define-key csharp-mode-map (kbd "C-o C-k C-d") 'omnisharp-code-format)
-                        (define-key csharp-mode-map (kbd "C-o C-S-r") 'omnisharp-run-code-action-refactoring)
-                        (define-key csharp-mode-map (kbd "C-o C-r C-r") 'omnisharp-rename-interactively)
-                        (define-key csharp-mode-map (kbd "C-o C-u C-u") '(lambda() (interactive) (omnisharp-unit-test "single")))
-                        (define-key csharp-mode-map (kbd "C-o C-u C-f") '(lambda() (interactive) (omnisharp-unit-test "fixture")))
-                        (define-key csharp-mode-map (kbd "C-o C-u C-a") '(lambda() (interactive) (omnisharp-unit-test "all")))
-                        )
-              :ensure t)
-            (when (file-exists-p omnisharp-server-executable-path)
-              (omnisharp-mode)))
-  :ensure t)
-
-(use-package haskell-mode
-  :commands haskell-mode
-  :init (progn
-          ;; intendation
-          (use-package hi2
-            :defer t
-            :init (progn
-                    (add-hook 'haskell-mode-hook 'turn-on-hi2)
-                    (add-hook 'haskell-mode-hook 'interactive-haskell-mode))
-            :ensure t)
-          ;; ghc-mod (requires cabal install ghc-mod)
-          (use-package ghc
-            :if (if (not (eq system-type 'windows-nt))
-                    (file-exists-p "~/.cabal/bin/ghc-mod")
-                  (file-exists-p "~/.cabal/bin/ghc-mod.exe"))
-            :commands (ghc-init ghc-debug)
-            :init (add-hook 'haskell-mode-hook (lambda () (ghc-init)))
-            :ensure t))
-  :config (progn
-            ;; make the cabal binaries available
-            (when (file-directory-p "~/.cabal/bin")
-              (progn
-                (let ((my-cabal-path (expand-file-name "~/.cabal/bin")))
-                  (setenv "PATH" (concat my-cabal-path ":" (getenv "PATH")))
-                  (add-to-list 'exec-path my-cabal-path))
-                ;; to be able to use M-. to jump to definitions (requires cabal install hasktags)
-                ;; and the files must be in a cabal project
-                (setq haskell-tags-on-save t)
-                ;; M-x haskell-mode-stylish-buffer (requires cabal install stylish-haskell)
-                ))
-            ;; log ghci
-            (setq haskell-process-log t)
-            ;; use 'cabal repl' to use the cabal sandbox if present
-            (setq haskell-process-type 'cabal-repl))
-  :ensure t)
-
-(use-package slime
-  :commands slime
-  :config (progn
-            (if (eq system-type 'windows-nt)
-                (setq inferior-lisp-program "~/.emacs.d/bin/ccl/wx86cl64.exe")
-              (setq inferior-lisp-program "~/.emacs.d/bin/ccl/lx86cl"))
-            (slime-setup '(slime-fancy)))
-  :ensure t)
+(use-package g-music
+  :commands (g-music)
+  :init (progn (use-package s
+                 :ensure t)
+               (use-package dash
+                 :ensure t)
+               (use-package request
+                 :ensure t)
+               (use-package libmpdee
+                 :ensure t)
+               (if (or (eq system-type 'windows-nt) (eq system-type 'msdos))
+                   (add-hook 'g-music-mode-hook
+                             '(lambda ()
+                                (setq *g-music-proxy-process*
+                                      "c:/tools/python2/python.exe c:/tools/python2/Scripts/GMusicProxy --conf c:/Users/DNabraczky/.gmusicproxy.cfg"))))))
 
 (use-package copenrelational
   :bind ("<f4>" . c-open-relational-file))
