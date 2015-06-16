@@ -1,8 +1,6 @@
 ;; ======================== add path for the extra libraries ==============
 ;; Emacs Load Path
 (setq load-path (cons "~/.emacs.d/libraries" load-path))
-(setq load-path (cons "~/.emacs.d/libraries/mu4e" load-path))
-(setq load-path (cons "~/.emacs.d/libraries/mingus" load-path))
 
 ;; ======================== set PATH for Windows unix tools  ==============
 (if (or (eq system-type 'windows-nt) (eq system-type 'msdos))
@@ -92,6 +90,10 @@
 
 ;; ================================================================
 (use-package cl-lib)
+
+(use-package try
+  :commands try
+  :ensure t)
 
 (use-package eyebrowse
   :bind      ("C-c e" . eyebrowse-mode)
@@ -196,6 +198,9 @@
                                 (skeletor-shell-command "cabal sandbox init"))))
   :ensure t)
 
+(use-package overseer
+  :ensure t)
+
 (use-package paredit
   :commands enable-paredit-mode
   :init (progn
@@ -204,7 +209,15 @@
           (add-hook 'lisp-interaction-mode-hook 'enable-paredit-mode))
   :config (progn
             (use-package paredit-menu
-              :ensure t))
+              :ensure t)
+            (define-key paredit-mode-map (kbd "C-<right>") 'paredit-forward)
+            (define-key paredit-mode-map (kbd "C-<left>") 'paredit-backward)
+            (define-key paredit-mode-map (kbd "C-<up>") 'paredit-backward-up)
+            (define-key paredit-mode-map (kbd "C-<down>") 'paredit-forward-down)
+            (define-key paredit-mode-map (kbd "C-M-<right>") 'paredit-forward-slurp-sexp)
+            (define-key paredit-mode-map (kbd "C-M-<left>") 'paredit-forward-barf-sexp)
+            (define-key paredit-mode-map (kbd "C-M-<up>") 'paredit-backward-slurp-sexp)
+            (define-key paredit-mode-map (kbd "C-M-<down>") 'paredit-backward-barf-sexp))
   :ensure t)
 
 (use-package nxml-mode
@@ -284,6 +297,15 @@
             (setq haskell-process-log t)
             ;; use 'cabal repl' to use the cabal sandbox if present
             (setq haskell-process-type 'cabal-repl))
+  :ensure t)
+
+(use-package slime
+  :commands slime
+  :config (progn
+            (if (eq system-type 'windows-nt)
+                (setq inferior-lisp-program "~/.emacs.d/bin/ccl/wx86cl64.exe")
+              (setq inferior-lisp-program "~/.emacs.d/bin/ccl/lx86cl"))
+            (slime-setup '(slime-fancy)))
   :ensure t)
 
 (use-package magit
@@ -377,12 +399,9 @@
                   ))
   :ensure t)
 
-(use-package mingus
-  :commands (mingus
-             mingus-help))
-
 (use-package mu4e
   :if (not (eq system-type 'windows-nt))
+  :load-path "~/.emacs.d/libraries/mu4e"
   :commands mu4e
   :config (progn
             ;; default
@@ -451,14 +470,16 @@
             ;; don't keep message buffers around
             (setq message-kill-buffer-on-exit t)))
 
-(use-package slime
-  :commands slime
-  :config (progn
-            (if (eq system-type 'windows-nt)
-                (setq inferior-lisp-program "~/.emacs.d/bin/ccl/wx86cl64.exe")
-              (setq inferior-lisp-program "~/.emacs.d/bin/ccl/lx86cl"))
-            (slime-setup '(slime-fancy)))
-  :ensure t)
+(use-package g-music
+  :commands (g-music)
+  :init (progn (use-package s
+                 :ensure t)
+               (use-package dash
+                 :ensure t)
+               (use-package request
+                 :ensure t)
+               (use-package libmpdee
+                 :ensure t)))
 
 (use-package copenrelational
   :bind ("<f4>" . c-open-relational-file))
