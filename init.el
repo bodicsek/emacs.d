@@ -35,6 +35,7 @@
       backup-inhibited t               ;; disable backup files
       auto-save-default nil            ;; disable auto-save
       inhibit-startup-screen t         ;; disable startup screen
+      initial-major-mode 'text-mode    ;; text-mode in *scratch* buffer
       revert-without-query '(".*")     ;; revert buffer without prompt
       kill-whole-line t                ;; line is killed new line inclusive
       browse-url-generic-program (executable-find "conkeror") ;; default browser
@@ -74,7 +75,6 @@
 
 ;; =========== setting up min package requirements ================
 (require 'package)
-(require 'package-extensions)
 (package-initialize)
 (mapc (lambda (p) (push p package-archives))
       '(("melpa"        . "http://melpa.org/packages/")
@@ -85,8 +85,8 @@
         (shm          . "melpa-stable")
         (ghc          . "melpa-stable")
         (company-ghc  . "melpa-stable")))
-(install-required-packages '(use-package))
-(require 'use-package)
+(require 'package-extensions)
+(pe-install-required-packages '(use-package))
 
 ;; ================================================================
 (use-package cl-lib)
@@ -206,7 +206,8 @@
   :init (progn
           (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
           (add-hook 'lisp-mode-hook 'enable-paredit-mode)
-          (add-hook 'lisp-interaction-mode-hook 'enable-paredit-mode))
+          (add-hook 'lisp-interaction-mode-hook 'enable-paredit-mode)
+          (add-hook 'ielm-mode-hook 'enable-paredit-mode))
   :config (progn
             (use-package paredit-menu
               :ensure t)
@@ -219,6 +220,25 @@
             (define-key paredit-mode-map (kbd "C-M-<up>") 'paredit-backward-slurp-sexp)
             (define-key paredit-mode-map (kbd "C-M-<down>") 'paredit-backward-barf-sexp))
   :ensure t)
+
+(use-package lisp-mode
+  :init (add-hook 'emacs-lisp-mode-hook
+                  #'(lambda ()
+                      (use-package s
+                        :ensure t)
+                      (use-package f
+                        :ensure t)
+                      (use-package names
+                        :config (require 'names-dev)
+                        :ensure t)
+                      (use-package dash
+                        :config (dash-enable-font-lock)
+                        :ensure t)
+                      (use-package cl-lib-highlight
+                        :config (progn
+                                  (cl-lib-highlight-initialize)
+                                  (cl-lib-highlight-warn-cl-initialize))
+                        :ensure t))))
 
 (use-package nxml-mode
   :mode (("\\.csproj\\'" . nxml-mode)
