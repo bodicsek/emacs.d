@@ -168,8 +168,18 @@
   :ensure t)
 
 (use-package projectile
-  :bind ("C-c p C-b" . projectile-ibuffer)
   :init (projectile-global-mode)
+  :config (progn
+            (define-key projectile-command-map (kbd "R")
+              #'(lambda ()
+                  (interactive)
+                  (when (and (projectile-project-p)
+                             (projectile-file-exists-p ".project.tags"))
+                    (setq projectile-idle-timer-seconds 10
+                          projectile-enable-idle-timer  t
+                          projectile-tags-command "etags --regex=@.project.tags *.el test/*.el"))
+                  (projectile-regenerate-tags)))
+            (define-key projectile-command-map (kbd "C-b") 'projectile-ibuffer))
   :ensure t)
 
 (use-package skeletor

@@ -10,7 +10,8 @@
    (lambda (package) 
      (unless (require package nil t)
        (when (not pe--refresh-done)
-         (package-refresh-contents))
+         (package-refresh-contents)
+         (setq pe--refresh-done t))
        (package-install package)))
    package-list))
 
