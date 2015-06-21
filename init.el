@@ -163,8 +163,27 @@
 
 (use-package company
   :commands company-mode
-  :bind ("C-SPC" . company-complete)
-  :init (add-hook 'after-init-hook 'global-company-mode)
+  :bind   (("C-SPC" . company-complete)
+           ("C-M-SPC" . company-etags))
+  :init   (progn
+            (add-hook 'after-init-hook 'global-company-mode)
+            (custom-set-variables
+             '(company-backends
+               (quote
+                (company-ghc
+                 company-bbdb
+                 company-nxml
+                 company-css
+                 company-eclim
+                 company-semantic
+                 company-clang
+                 company-xcode
+                 company-cmake
+                 (company-etags company-capf)
+                 (company-dabbrev-code company-gtags company-keywords)
+                 company-oddmuse
+                 company-files
+                 company-dabbrev)))))
   :ensure t)
 
 (use-package projectile
@@ -529,3 +548,4 @@
              encode-hex-string)
   :config (use-package uuid
             :ensure t))
+
