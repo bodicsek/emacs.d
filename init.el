@@ -86,7 +86,8 @@
         (ghc          . "melpa-stable")
         (company-ghc  . "melpa-stable")))
 (require 'package-extensions)
-(pe-install-required-packages '(use-package cl-lib-highlight))
+(pe-force-refresh-if-requested)
+(pe-install-required-packages '(use-package))
 
 ;; ================================================================
 (use-package cl-lib)
@@ -202,7 +203,7 @@
                         (setq projectile-idle-timer-seconds 10
                               projectile-enable-idle-timer  t
                               projectile-tags-command "etags --regex=@.project.tags *.el test/*.el")
-                      (projectile-tags-command "find . -name \"*.el\" -print | xargs etags")))
+                      (setq projectile-tags-command "find . -name \"*.el\" -print | xargs etags")))
                   (projectile-regenerate-tags)))
             (define-key projectile-command-map (kbd "C-b") 'projectile-ibuffer))
   :ensure t)
@@ -270,9 +271,10 @@
              (use-package dash
                :config (dash-enable-font-lock)
                :ensure t)
-             (when (package-installed-p 'cl-lib-highlight)
-               (cl-lib-highlight-initialize)
-               (cl-lib-highlight-warn-cl-initialize)))))
+             (use-package cl-lib-highlight
+               :config (progn (cl-lib-highlight-initialize)
+                              (cl-lib-highlight-warn-cl-initialize))
+               :ensure t))))
 
 (use-package nxml-mode
   :mode (("\\.csproj\\'" . nxml-mode)
