@@ -86,7 +86,7 @@
         (ghc          . "melpa-stable")
         (company-ghc  . "melpa-stable")))
 (require 'package-extensions)
-(pe-install-required-packages '(use-package))
+(pe-install-required-packages '(use-package cl-lib-highlight))
 
 ;; ================================================================
 (use-package cl-lib)
@@ -108,10 +108,15 @@
          ("C-x <right>" . windmove-right)))
 
 (use-package leuven-theme
+  :disabled
   :config (progn
             (load-theme 'leuven t)
             (set-face-attribute 'hl-line nil
                                 :background "powder blue"))
+  :ensure t)
+
+(use-package monokai-theme
+  :config (load-theme 'monokai t)
   :ensure t)
 
 (use-package ibuffer
@@ -192,11 +197,12 @@
             (define-key projectile-command-map (kbd "R")
               #'(lambda ()
                   (interactive)
-                  (when (and (projectile-project-p)
-                             (projectile-file-exists-p ".project.tags"))
-                    (setq projectile-idle-timer-seconds 10
-                          projectile-enable-idle-timer  t
-                          projectile-tags-command "etags --regex=@.project.tags *.el test/*.el"))
+                  (when (projectile-project-p)
+                    (if (projectile-file-exists-p ".project.tags")
+                        (setq projectile-idle-timer-seconds 10
+                              projectile-enable-idle-timer  t
+                              projectile-tags-command "etags --regex=@.project.tags *.el test/*.el")
+                      (projectile-tags-command "find . -name \"*.el\" -print | xargs etags")))
                   (projectile-regenerate-tags)))
             (define-key projectile-command-map (kbd "C-b") 'projectile-ibuffer))
   :ensure t)
@@ -251,23 +257,22 @@
   :ensure t)
 
 (use-package lisp-mode
-  :init (add-hook 'emacs-lisp-mode-hook
-                  #'(lambda ()
-                      (use-package s
-                        :ensure t)
-                      (use-package f
-                        :ensure t)
-                      (use-package names
-                        :config (require 'names-dev)
-                        :ensure t)
-                      (use-package dash
-                        :config (dash-enable-font-lock)
-                        :ensure t)
-                      (use-package cl-lib-highlight
-                        :config (progn
-                                  (cl-lib-highlight-initialize)
-                                  (cl-lib-highlight-warn-cl-initialize))
-                        :ensure t))))
+  :init (add-hook
+         'emacs-lisp-mode-hook
+         #'(lambda ()
+             (use-package s
+               :ensure t)
+             (use-package f
+               :ensure t)
+             (use-package names
+               :config (require 'names-dev)
+               :ensure t)
+             (use-package dash
+               :config (dash-enable-font-lock)
+               :ensure t)
+             (when (package-installed-p 'cl-lib-highlight)
+               (cl-lib-highlight-initialize)
+               (cl-lib-highlight-warn-cl-initialize)))))
 
 (use-package nxml-mode
   :mode (("\\.csproj\\'" . nxml-mode)
@@ -524,6 +529,8 @@
   :init (progn (use-package s
                  :ensure t)
                (use-package dash
+                 :ensure t)
+               (use-package names
                  :ensure t)
                (use-package request
                  :ensure t)
