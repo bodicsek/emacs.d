@@ -94,6 +94,7 @@
 
 (use-package try
   :commands try
+  :config (package-refresh-contents)
   :ensure t)
 
 (use-package eyebrowse
