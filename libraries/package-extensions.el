@@ -10,7 +10,8 @@
   (mapc
    (lambda (package) 
      (unless (require package nil t)
-       (package-install package)))
+       (package-install package)
+       (require package)))
    package-list))
 
 (provide 'package-extensions)
