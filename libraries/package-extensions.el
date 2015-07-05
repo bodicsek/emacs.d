@@ -2,8 +2,10 @@
 
 (defun pe-force-refresh-if-requested ()
   "If the --install command line argument is present it refreshes the package content."
-  (when (member "--install" command-line-args)
-    (package-refresh-contents)))
+  (let ((install-arg "--install"))
+    (when (member install-arg command-line-args)
+      (package-refresh-contents)
+      (setq command-line-args (delete install-arg command-line-args)))))
 
 (defun pe-install-required-packages (package-list)
   "Installs the packages in package-list."
