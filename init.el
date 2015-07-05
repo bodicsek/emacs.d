@@ -58,6 +58,8 @@
         show-paren-mode
         winner-mode))
 
+(prefer-coding-system 'utf-8)
+
 (fset 'yes-or-no-p 'y-or-n-p)          ;; only y and n
 
 (global-set-key (kbd "M--") 'pop-tag-mark)
