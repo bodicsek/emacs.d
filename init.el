@@ -544,7 +544,7 @@
                (if (or (eq system-type 'windows-nt) (eq system-type 'msdos))
                    (add-hook 'g-music-mode-hook
                              '(lambda ()
-                                (setq *g-music-proxy-process*
+                                (setq g-music-proxy-process
                                       "c:/tools/python2/python.exe c:/tools/python2/Scripts/GMusicProxy --conf c:/Users/DNabraczky/.gmusicproxy.cfg"))))))
 
 (use-package copenrelational
