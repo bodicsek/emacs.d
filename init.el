@@ -38,7 +38,7 @@
       initial-major-mode 'text-mode    ;; text-mode in *scratch* buffer
       revert-without-query '(".*")     ;; revert buffer without prompt
       kill-whole-line t                ;; line is killed new line inclusive
-      browse-url-generic-program (executable-find "conkeror") ;; default browser
+      browse-url-generic-program (executable-find "firefox") ;; default browser
       browse-url-browser-function 'browse-url-generic
       ediff-window-setup-function 'ediff-setup-windows-plain  ;; no new frame for ediff
       gnus-init-file "~/.emacs.d/gnus.init.el"                ;; gnus init file
