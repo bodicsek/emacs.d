@@ -3,15 +3,11 @@
 (setq load-path (cons "~/.emacs.d/libraries" load-path))
 
 ;; ======================== set PATH for Windows unix tools  ==============
-(if (or (eq system-type 'windows-nt) (eq system-type 'msdos))
+(when (or (eq system-type 'windows-nt) (eq system-type 'msdos))
     (progn (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/gnuwin32/bin;" (getenv "PATH"))))
            (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/gnuwin32/bin"))
            (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/curl;" (getenv "PATH"))))
-           (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/curl"))
-           (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/conkeror/windows;" (getenv "PATH"))))
-           (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/conkeror/windows")))
-  (progn (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/conkeror/linux:" (getenv "PATH"))))
-         (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/conkeror/linux"))))
+           (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/curl"))))
 
 ;; ======================== set font ======================
 (if (or (eq system-type 'windows-nt) (eq system-type 'msdos))
@@ -380,15 +376,15 @@
   :commands deft
   :config (progn
             (setq deft-extension "org")
-            (setq deft-directory "~/Dropbox/Notes")
+            (setq deft-directory "~/disk42/OrgNotes/Notes")
             (setq deft-text-mode 'org-mode))
   :ensure t)
 
 (use-package org
   :commands org-mode
-  :config (let ((dropbox-org-dir "~/Dropbox/Notes")
-                (dropbox-mobileorg-dir "~/Dropbox/MobileOrg")
-                (dropbox-mobileorg-pullfile "~/Dropbox/Notes/links.org"))
+  :config (let ((dropbox-org-dir "~/disk42/OrgNotes/Notes")
+                (dropbox-mobileorg-dir "~/disk42/OrgNotes/MobileOrg")
+                (dropbox-mobileorg-pullfile "~/disk42/OrgNotes/Notes/links.org"))
             (setq org-directory dropbox-org-dir)
             (setq org-agenda-files (list dropbox-org-dir))
             (setq org-mobile-directory dropbox-mobileorg-dir)
