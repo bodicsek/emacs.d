@@ -4,10 +4,8 @@
 
 ;; ======================== set PATH for Windows unix tools  ==============
 (when (or (eq system-type 'windows-nt) (eq system-type 'msdos))
-    (progn (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/gnuwin32/bin;" (getenv "PATH"))))
-           (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/gnuwin32/bin"))
-           (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/curl;" (getenv "PATH"))))
-           (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/curl"))
+    (progn (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/gow/bin;" (getenv "PATH"))))
+           (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/gow/bin"))
            (setenv "GIT_ASKPASS" "git-gui--askpass")))
 
 ;; ======================== set font ======================
@@ -210,18 +208,18 @@
             (define-key projectile-command-map (kbd "C-b") 'projectile-ibuffer)
             ;; completion system is helm
             (use-package helm
-              :config (use-package helm-projectile
-                        :config (helm-projectile-on)
-                        :ensure t)
+              :config (progn
+                        (setq projectile-completion-system 'helm)
+                        (use-package helm-projectile
+                          :config (helm-projectile-on)
+                          :ensure t))
               :ensure t)
-            (setq projectile-completion-system 'helm)
+            ;; default action after project selection
+            (setq projectile-switch-project-action 'helm-projectile)
             ;; always use external tools for indexing
             (setq projectile-indexing-method 'alien)
-            ;; default action when changing project
-            (setq projectile-switch-project-action 'helm-projectile)
-            ;; enable caching
-            (setq projectile-enable-caching t)
-            )
+            ;; always use cache
+            (setq projectile-enable-caching t))
   :ensure t)
 
 (use-package skeletor
