@@ -195,6 +195,7 @@
 (use-package projectile
   :init (projectile-global-mode)
   :config (progn
+            ;; regenerate project *.el TAGS
             (define-key projectile-command-map (kbd "R")
               #'(lambda ()
                   (interactive)
@@ -205,7 +206,20 @@
                               projectile-tags-command "etags --regex=@.project.tags *.el test/*.el")
                       (setq projectile-tags-command "find . -name \"*.el\" -print | xargs etags")))
                   (projectile-regenerate-tags)))
-            (define-key projectile-command-map (kbd "C-b") 'projectile-ibuffer))
+            ;; keyboard shortcut for project ibuffer
+            (define-key projectile-command-map (kbd "C-b") 'projectile-ibuffer)
+            ;; completion system is helm
+            (use-package helm
+              :config (use-package helm-projectile
+                        :config (helm-projectile-on)
+                        :ensure t)
+              :ensure t)
+            (setq projectile-completion-system 'helm)
+            ;; always use external tools for indexing
+            (setq projectile-indexing-method 'alien)
+            ;; default action when changing project
+            (setq projectile-switch-project-action 'helm-projectile)
+            )
   :ensure t)
 
 (use-package skeletor
