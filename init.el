@@ -219,6 +219,8 @@
             (setq projectile-indexing-method 'alien)
             ;; default action when changing project
             (setq projectile-switch-project-action 'helm-projectile)
+            ;; enable caching
+            (setq projectile-enable-caching t)
             )
   :ensure t)
 
