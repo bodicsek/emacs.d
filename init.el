@@ -393,15 +393,16 @@
   :commands deft
   :config (progn
             (setq deft-extension "org")
-            (setq deft-directory "~/disk42/OrgNotes/Notes")
+            (setq deft-directory (concat "p:/" (user-login-name) "/Dropbox/OrgNotes/Notes"))
             (setq deft-text-mode 'org-mode))
   :ensure t)
 
 (use-package org
   :commands org-mode
-  :config (let ((dropbox-org-dir "~/disk42/OrgNotes/Notes")
-                (dropbox-mobileorg-dir "~/disk42/OrgNotes/MobileOrg")
-                (dropbox-mobileorg-pullfile "~/disk42/OrgNotes/Notes/links.org"))
+  :config (let* ((dropbox-dir (concat "p:/" (user-login-name) "/Dropbox/OrgNotes"))
+                 (dropbox-org-dir (concat dropbox-dir "/Notes"))
+                 (dropbox-mobileorg-dir (concat dropbox-dir "/MobileOrg"))
+                 (dropbox-mobileorg-pullfile (concat dropbox-org-dir "/links.org")))
             (setq org-directory dropbox-org-dir)
             (setq org-agenda-files (list dropbox-org-dir))
             (setq org-mobile-directory dropbox-mobileorg-dir)
