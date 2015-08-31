@@ -414,7 +414,6 @@
 (use-package hackernews
   :commands hackernews
   :init (defalias 'hn 'hackernews)
-  :config (set-face-attribute 'hackernews-link-face nil :foreground "red")
   :ensure t)
 
 (use-package twittering-mode
