@@ -37,6 +37,7 @@
       browse-url-browser-function 'browse-url-generic
       ediff-window-setup-function 'ediff-setup-windows-plain  ;; no new frame for ediff
       gnus-init-file "~/.emacs.d/gnus.init.el"                ;; gnus init file
+      visible-bell 1                   ;; disable bell
       )
 
 (mapc (lambda (mode) (when (fboundp mode) (apply mode '(0))))
