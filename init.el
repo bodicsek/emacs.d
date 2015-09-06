@@ -2,11 +2,11 @@
 ;; Emacs Load Path
 (setq load-path (cons "~/.emacs.d/libraries" load-path))
 
-;; ======================== set PATH for Windows unix tools  ==============
+;; ======================== check for Windows unix tools and adjust settings ==============
 (when (or (eq system-type 'windows-nt) (eq system-type 'msdos))
-    (progn (setenv "PATH" (concat (getenv "HOME") (concat "/.emacs.d/bin/gow/bin;" (getenv "PATH"))))
-           (add-to-list 'exec-path (concat (getenv "HOME") "/.emacs.d/bin/gow/bin"))
-           (setenv "GIT_ASKPASS" "git-gui--askpass")))
+  (if (file-directory-p "C:/tools/cmder/vendor/msysgit/bin")
+      (setenv "GIT_ASKPASS" "git-gui--askpass")
+    (message-box "There is no msysgit at 'C:\\tools\\cmder\\vendor\\msysgit\\bin'. Please install cmder with chocolatey!")))
 
 ;; ======================== set font ======================
 (if (or (eq system-type 'windows-nt) (eq system-type 'msdos))
