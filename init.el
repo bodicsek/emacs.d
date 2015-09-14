@@ -38,6 +38,7 @@
       ediff-window-setup-function 'ediff-setup-windows-plain  ;; no new frame for ediff
       gnus-init-file "~/.emacs.d/gnus.init.el"                ;; gnus init file
       visible-bell 1                   ;; disable bell
+      org-notes-dir "~/ownCloud/OrgNotes"
       )
 
 (mapc (lambda (mode) (when (fboundp mode) (apply mode '(0))))
@@ -392,20 +393,19 @@
   :commands deft
   :config (progn
             (setq deft-extension "org")
-            (setq deft-directory (concat "p:/" (user-login-name) "/Dropbox/OrgNotes/Notes"))
+            (setq deft-directory (concat org-notes-dir "/Notes"))
             (setq deft-text-mode 'org-mode))
   :ensure t)
 
 (use-package org
   :commands org-mode
-  :config (let* ((dropbox-dir (concat "p:/" (user-login-name) "/Dropbox/OrgNotes"))
-                 (dropbox-org-dir (concat dropbox-dir "/Notes"))
-                 (dropbox-mobileorg-dir (concat dropbox-dir "/MobileOrg"))
-                 (dropbox-mobileorg-pullfile (concat dropbox-org-dir "/links.org")))
-            (setq org-directory dropbox-org-dir)
-            (setq org-agenda-files (list dropbox-org-dir))
-            (setq org-mobile-directory dropbox-mobileorg-dir)
-            (setq org-mobile-inbox-for-pull dropbox-mobileorg-pullfile)
+  :config (let* ((org-dir            (concat org-notes-dir "/Notes"))
+                 (mobileorg-dir      (concat org-notes-dir "/MobileOrg"))
+                 (mobileorg-pullfile (concat org-dir "/links.org")))
+            (setq org-directory org-dir)
+            (setq org-agenda-files (list org-dir))
+            (setq org-mobile-directory mobileorg-dir)
+            (setq org-mobile-inbox-for-pull mobileorg-pullfile)
             (setq org-todo-keywords '((sequence "TODO" "ACTIVE" "|" "DONE")))
             (setq org-completion-use-ido t))
   :ensure t)
