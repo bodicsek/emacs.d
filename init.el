@@ -96,6 +96,14 @@
   :config (package-refresh-contents)
   :ensure t)
 
+(use-package which-key
+  :config (progn
+            (setq which-key-idle-delay 1.0) 
+            (which-key-setup-side-window-right-bottom)
+            (setq which-key-prevent-C-h-from-cycling nil)
+            (which-key-mode))
+  :ensure t)
+
 (use-package eyebrowse
   :bind      ("C-c e" . eyebrowse-mode)
   :commands  eyebrowse-mode
@@ -372,6 +380,7 @@
   :ensure t)
 
 (use-package slime
+  :disabled
   :commands slime
   :config (progn
             (if (eq system-type 'windows-nt)
