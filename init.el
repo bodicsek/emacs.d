@@ -2,12 +2,6 @@
 ;; Emacs Load Path
 (setq load-path (cons "~/.emacs.d/libraries" load-path))
 
-;; ======================== check for Windows unix tools and adjust settings ==============
-(when (or (eq system-type 'windows-nt) (eq system-type 'msdos))
-  (if (file-directory-p "C:/tools/cmder/vendor/msysgit/bin")
-      (setenv "GIT_ASKPASS" "git-gui--askpass")
-    (message-box "There is no msysgit at 'C:\\tools\\cmder\\vendor\\msysgit\\bin'. Please install cmder with chocolatey!")))
-
 ;; ======================== set font ======================
 (if (or (eq system-type 'windows-nt) (eq system-type 'msdos))
     ;; fonts for windows
@@ -395,13 +389,15 @@
   :init (progn
           (defalias 'gs 'magit-status)
           (setq magit-completing-read-function 'magit-ido-completing-read)
-          (setq magit-last-seen-setup-instructions "1.4.0"))
+          (when (eq system-type 'windows-nt)
+            (setenv "GIT_ASKPASS" "git-gui--askpass")))
   :ensure t)
 
 (use-package deft
   :commands deft
   :config (progn
-            (setq deft-extension "org")
+            (setq deft-extensions '("org"))
+            (setq deft-default-extension "org")
             (setq deft-directory (concat org-notes-dir "/Notes"))
             (setq deft-text-mode 'org-mode))
   :ensure t)
