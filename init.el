@@ -3,7 +3,7 @@
 (setq load-path (cons "~/.emacs.d/libraries" load-path))
 
 ;; ======================== set font ======================
-(if (or (eq system-type 'windows-nt) (eq system-type 'msdos))
+(if (eq system-type 'windows-nt)
     ;; fonts for windows
     (progn
       (set-face-font 'default "-outline-Consolas-normal-normal-normal-normal-14-*-*-*-c-*-iso8859-1")
@@ -154,7 +154,10 @@
 (use-package dired+
   :config (progn
             (put 'dired-find-alternate-file 'disabled nil)
-            (setq dired-do-highlighting t dired-dwim-target t)
+            (setq dired-do-highlighting t
+                  dired-dwim-target t
+                  dired-recursive-copies 'always
+                  dired-recursive-deletes 'always)
             (add-to-list 'dired-compress-file-suffixes '("\\.zip\\'" ".zip" "unzip"))
             (use-package dired-extensions)
             (define-key dired-mode-map "z" 'dired-zip-files)
