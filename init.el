@@ -92,9 +92,10 @@
 
 (use-package which-key
   :config (progn
-            (setq which-key-idle-delay 1.0) 
             (which-key-setup-side-window-right-bottom)
-            (setq which-key-prevent-C-h-from-cycling nil)
+            (setq which-key-idle-delay 1.0
+                  which-key-prevent-C-h-from-cycling nil
+                  which-key-max-description-length 40)
             (which-key-mode))
   :ensure t)
 
@@ -126,6 +127,7 @@
   :bind ("C-x C-b" . ibuffer))
 
 (use-package ido
+  :disabled
   :init (progn
           (setq ido-everywhere t)
           (setq ido-enable-flex-matching t)
@@ -144,6 +146,18 @@
             (use-package ido-ubiquitous
               :config (ido-ubiquitous-mode 1)
               :ensure t)))
+
+(use-package helm
+  :bind (("M-x" . helm-M-x)
+         ("C-x C-f" . helm-find-files))
+  :config (progn
+            (setq helm-ff-auto-update-initial-value t
+                  helm-ff-lynx-style-map t
+                  enable-recursive-minibuffers t
+                  helm-grep-default-command "grep -a -d skip -n%cH -e %p %f"
+                  helm-grep-default-recurse-command "grep -a -d recurse -n%cH -e %p %f")
+            (helm-mode 1))
+  :ensure t)
 
 (use-package bm
   :bind (("C-<f2>" . bm-toggle)
@@ -214,12 +228,9 @@
             ;; keyboard shortcut for project ibuffer
             (define-key projectile-command-map (kbd "C-b") 'projectile-ibuffer)
             ;; completion system is helm
-            (use-package helm
-              :config (progn
-                        (setq projectile-completion-system 'helm)
-                        (use-package helm-projectile
-                          :config (helm-projectile-on)
-                          :ensure t))
+            (setq projectile-completion-system 'helm)
+            (use-package helm-projectile
+              :config (helm-projectile-on)
               :ensure t)
             ;; default action after project selection
             (setq projectile-switch-project-action 'helm-projectile)
@@ -545,7 +556,7 @@
               :ensure t)
 
             (setq mu4e-hide-index-messages t)
-            
+
             ;; don't keep message buffers around
             (setq message-kill-buffer-on-exit t)))
 
