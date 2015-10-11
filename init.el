@@ -230,7 +230,9 @@
             ;; completion system is helm
             (setq projectile-completion-system 'helm)
             (use-package helm-projectile
-              :config (helm-projectile-on)
+              :config (progn
+                        (setq projectile-use-git-grep t)
+                        (helm-projectile-on))
               :ensure t)
             ;; default action after project selection
             (setq projectile-switch-project-action 'helm-projectile)
