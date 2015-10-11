@@ -148,14 +148,17 @@
               :ensure t)))
 
 (use-package helm
-  :bind (("M-x" . helm-M-x)
-         ("C-x C-f" . helm-find-files))
+  :bind (("M-x"     . helm-M-x)
+         ("C-x C-f" . helm-find-files)
+         ("M-y"     . helm-show-kill-ring)
+         ("C-x b"   . helm-mini))
   :config (progn
             (setq helm-ff-auto-update-initial-value t
                   helm-ff-lynx-style-map t
                   enable-recursive-minibuffers t
                   helm-grep-default-command "grep -a -d skip -n%cH -e %p %f"
                   helm-grep-default-recurse-command "grep -a -d recurse -n%cH -e %p %f")
+            (helm-autoresize-mode t)
             (helm-mode 1))
   :ensure t)
 
