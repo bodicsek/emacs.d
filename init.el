@@ -158,7 +158,6 @@
                   enable-recursive-minibuffers t
                   helm-grep-default-command "grep -a -d skip -n%cH -e %p %f"
                   helm-grep-default-recurse-command "grep -a -d recurse -n%cH -e %p %f")
-            (helm-autoresize-mode t)
             (helm-mode 1))
   :ensure t)
 
