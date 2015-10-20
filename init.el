@@ -429,7 +429,7 @@
             (setq org-agenda-files (list org-dir))
             (setq org-mobile-directory mobileorg-dir)
             (setq org-mobile-inbox-for-pull mobileorg-pullfile)
-            (setq org-todo-keywords '((sequence "TODO" "ACTIVE" "|" "DONE")))
+            (setq org-todo-keywords '((sequence "TODO" "ACTIVE" "|" "DONE" "CANCEL")))
             (setq org-completion-use-ido t))
   :ensure t)
 
