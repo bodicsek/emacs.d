@@ -85,6 +85,30 @@
 ;; ================================================================
 (use-package cl-lib)
 
+
+(use-package monokai-theme
+  :config (load-theme 'monokai t)
+  :ensure t)
+
+(use-package spaceline
+  :config (progn
+            (require 'spaceline-config)
+            (setq spaceline-workspace-numbers-unicode t)
+            (spaceline-spacemacs-theme))
+  :ensure t)
+
+(use-package eyebrowse
+  :config    (progn
+               (setq eyebrowse-new-workspace t)
+               (eyebrowse-mode))
+  :ensure    t)
+
+(use-package windmove
+  :bind (("C-x <up>" . windmove-up)
+         ("C-x <down>" . windmove-down)
+         ("C-x <left>" . windmove-left)
+         ("C-x <right>" . windmove-right)))
+
 (use-package try
   :commands try
   :config (package-refresh-contents)
@@ -99,59 +123,12 @@
             (which-key-mode))
   :ensure t)
 
-(use-package eyebrowse
-  :bind      ("C-c e" . eyebrowse-mode)
-  :commands  eyebrowse-mode
-  :config    (setq eyebrowse-new-workspace t)
-  :ensure    t)
-
-(use-package windmove
-  :bind (("C-x <up>" . windmove-up)
-         ("C-x <down>" . windmove-down)
-         ("C-x <left>" . windmove-left)
-         ("C-x <right>" . windmove-right)))
-
-(use-package leuven-theme
-  :disabled
-  :config (progn
-            (load-theme 'leuven t)
-            (set-face-attribute 'hl-line nil
-                                :background "powder blue"))
-  :ensure t)
-
-(use-package monokai-theme
-  :config (load-theme 'monokai t)
-  :ensure t)
-
-(use-package ibuffer
-  :bind ("C-x C-b" . ibuffer))
-
-(use-package ido
-  :disabled
-  :init (progn
-          (setq ido-everywhere t)
-          (setq ido-enable-flex-matching t)
-          (setq ido-auto-merge-work-directories-length -1)
-          (setq ido-use-faces nil))
-  :config (progn
-            (ido-mode 1)
-            (use-package flx-ido
-              :config (flx-ido-mode 1)
-              :ensure t)
-            (use-package smex
-              :bind (("M-x" . smex)
-                     ("M-X" . smex-major-mode-commands)
-                     ("C-c C-c M-x" . execute-extended-command))
-              :ensure t)
-            (use-package ido-ubiquitous
-              :config (ido-ubiquitous-mode 1)
-              :ensure t)))
-
 (use-package helm
   :bind (("M-x"     . helm-M-x)
          ("C-x C-f" . helm-find-files)
          ("M-y"     . helm-show-kill-ring)
-         ("C-x b"   . helm-mini))
+         ("C-x b"   . helm-mini)
+         ("C-x C-b" . helm-buffer-list))
   :config (progn
             (setq helm-ff-auto-update-initial-value t
                   helm-ff-lynx-style-map t
@@ -391,16 +368,6 @@
             (setq haskell-process-type 'cabal-repl))
   :ensure t)
 
-(use-package slime
-  :disabled
-  :commands slime
-  :config (progn
-            (if (eq system-type 'windows-nt)
-                (setq inferior-lisp-program "~/.emacs.d/bin/ccl/wx86cl64.exe")
-              (setq inferior-lisp-program "~/.emacs.d/bin/ccl/lx86cl"))
-            (slime-setup '(slime-fancy)))
-  :ensure t)
-
 (use-package magit
   :commands (magit-init
              magit-status)
@@ -595,4 +562,50 @@
              encode-hex-string)
   :config (use-package uuid
             :ensure t))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+DISABLED
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package leuven-theme
+  :disabled
+  :config (progn
+            (load-theme 'leuven t)
+            (set-face-attribute 'hl-line nil
+                                :background "powder blue"))
+  :ensure t)
+
+(use-package ibuffer
+  :disabled
+  :bind ("C-x C-b" . ibuffer))
+
+(use-package ido
+  :disabled
+  :init (progn
+          (setq ido-everywhere t)
+          (setq ido-enable-flex-matching t)
+          (setq ido-auto-merge-work-directories-length -1)
+          (setq ido-use-faces nil))
+  :config (progn
+            (ido-mode 1)
+            (use-package flx-ido
+              :config (flx-ido-mode 1)
+              :ensure t)
+            (use-package smex
+              :bind (("M-x" . smex)
+                     ("M-X" . smex-major-mode-commands)
+                     ("C-c C-c M-x" . execute-extended-command))
+              :ensure t)
+            (use-package ido-ubiquitous
+              :config (ido-ubiquitous-mode 1)
+              :ensure t)))
+
+(use-package slime
+  :disabled
+  :commands slime
+  :config (progn
+            (if (eq system-type 'windows-nt)
+                (setq inferior-lisp-program "~/.emacs.d/bin/ccl/wx86cl64.exe")
+              (setq inferior-lisp-program "~/.emacs.d/bin/ccl/lx86cl"))
+            (slime-setup '(slime-fancy)))
+  :ensure t)
 
