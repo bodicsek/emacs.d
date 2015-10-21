@@ -85,7 +85,6 @@
 ;; ================================================================
 (use-package cl-lib)
 
-
 (use-package monokai-theme
   :config (load-theme 'monokai t)
   :ensure t)
@@ -158,6 +157,9 @@
               :ensure t)
             (use-package w32-browser
               :if (eq system-type 'windows-nt)
+              :ensure t)
+            (use-package async
+              :config (dired-async-mode 1)
               :ensure t))
   :ensure t)
 
@@ -564,7 +566,7 @@
             :ensure t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-DISABLED
+;; DISABLED
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package leuven-theme
   :disabled
