@@ -80,10 +80,16 @@
         (company-ghc  . "melpa-stable")))
 (require 'package-extensions)
 (pe-force-refresh-if-requested)
-(pe-install-required-packages '(use-package))
+(pe-install-required-packages '(use-package cl-lib s f names dash))
+;; ======================== set exec-path  ======================
+
+(mapc (lambda (p) (push p exec-path))
+      (cons "~/.emacs.d/bin"
+            (f-directories "~/.emacs.d/bin/"
+                           (lambda (dir) (equal (f-filename dir) "bin"))
+                           t)))
 
 ;; ================================================================
-(use-package cl-lib)
 
 (use-package monokai-theme
   :config (load-theme 'monokai t)
