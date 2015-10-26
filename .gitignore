@@ -5,6 +5,7 @@
 /ido.last
 /bin
 /.cask/
+/libraries/.cask/
 /server/
 /tramp
 /libraries/mu4e/*.elc

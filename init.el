@@ -80,14 +80,11 @@
         (company-ghc  . "melpa-stable")))
 (require 'package-extensions)
 (pe-force-refresh-if-requested)
-(pe-install-required-packages '(use-package cl-lib s f names dash))
+(pe-install-required-packages '(use-package cl-lib s f names dash diminish))
 ;; ======================== set exec-path  ======================
 
-(mapc (lambda (p) (push p exec-path))
-      (cons "~/.emacs.d/bin"
-            (f-directories "~/.emacs.d/bin/"
-                           (lambda (dir) (equal (f-filename dir) "bin"))
-                           t)))
+(require 'path-setup)
+(ps-setup "~/.emacs.d/bin")
 
 ;; ================================================================
 
@@ -95,17 +92,17 @@
   :config (load-theme 'monokai t)
   :ensure t)
 
-(use-package spaceline
+(use-package spaceline-config
   :config (progn
-            (require 'spaceline-config)
             (setq spaceline-workspace-numbers-unicode t)
             (spaceline-spacemacs-theme))
-  :ensure t)
+  :ensure spaceline)
 
 (use-package eyebrowse
-  :config    (progn
-               (setq eyebrowse-new-workspace t)
-               (eyebrowse-mode))
+  :config (progn
+            (setq eyebrowse-new-workspace t)
+            (eyebrowse-mode))
+  :diminish eyebrowse-mode
   :ensure    t)
 
 (use-package windmove
@@ -120,12 +117,12 @@
   :ensure t)
 
 (use-package which-key
-  :config (progn
-            (which-key-setup-side-window-right-bottom)
-            (setq which-key-idle-delay 1.0
-                  which-key-prevent-C-h-from-cycling nil
-                  which-key-max-description-length 40)
-            (which-key-mode))
+  :config (progn (which-key-setup-side-window-right-bottom)
+                 (setq which-key-idle-delay 1.0
+                       which-key-prevent-C-h-from-cycling nil
+                       which-key-max-description-length 80)
+                 (which-key-mode))
+  :diminish which-key-mode
   :ensure t)
 
 (use-package helm
@@ -133,7 +130,7 @@
          ("C-x C-f" . helm-find-files)
          ("M-y"     . helm-show-kill-ring)
          ("C-x b"   . helm-mini)
-         ("C-x C-b" . helm-buffer-list))
+         ("C-x C-b" . helm-buffers-list))
   :config (progn
             (setq helm-ff-auto-update-initial-value t
                   helm-ff-lynx-style-map t
@@ -141,6 +138,7 @@
                   helm-grep-default-command "grep -a -d skip -n%cH -e %p %f"
                   helm-grep-default-recurse-command "grep -a -d recurse -n%cH -e %p %f")
             (helm-mode 1))
+  :diminish helm-mode
   :ensure t)
 
 (use-package bm
@@ -157,8 +155,8 @@
                   dired-recursive-copies 'always
                   dired-recursive-deletes 'always)
             (add-to-list 'dired-compress-file-suffixes '("\\.zip\\'" ".zip" "unzip"))
-            (use-package dired-extensions)
-            (define-key dired-mode-map "z" 'dired-zip-files)
+            (use-package dired-extensions
+              :config (define-key dired-mode-map "z" 'dired-zip-files))
             (use-package dired-sort
               :ensure t)
             (use-package w32-browser
@@ -196,6 +194,7 @@
                  company-oddmuse
                  company-files
                  company-dabbrev)))))
+  :diminish company-mode
   :ensure t)
 
 (use-package projectile
@@ -256,6 +255,7 @@
   :ensure t)
 
 (use-package overseer
+  :commands overseer-mode
   :ensure t)
 
 (use-package paredit
@@ -276,6 +276,7 @@
             (define-key paredit-mode-map (kbd "C-M-<left>") 'paredit-forward-barf-sexp)
             (define-key paredit-mode-map (kbd "C-M-<up>") 'paredit-backward-slurp-sexp)
             (define-key paredit-mode-map (kbd "C-M-<down>") 'paredit-backward-barf-sexp))
+  :diminish paredit-mode
   :ensure t)
 
 (use-package lisp-mode
@@ -540,7 +541,7 @@
             (setq message-kill-buffer-on-exit t)))
 
 (use-package g-music
-  :commands (g-music)
+  :commands g-music
   :init (progn (use-package s
                  :ensure t)
                (use-package dash
@@ -616,4 +617,3 @@
               (setq inferior-lisp-program "~/.emacs.d/bin/ccl/lx86cl"))
             (slime-setup '(slime-fancy)))
   :ensure t)
-

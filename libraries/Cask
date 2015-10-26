@@ -1,0 +1,8 @@
+(source melpa)
+
+(files path-setup.el)
+
+(depends-on "f")
+(depends-on "dash")
+(depends-on "names")
+(depends-on "ert-runner")
