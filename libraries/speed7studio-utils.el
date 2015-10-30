@@ -8,7 +8,8 @@
   (save-excursion
     (goto-char beg)
     (while (search-forward-regexp "[0-9A-Fa-f]\\{8\\}-[0-9A-Fa-f]\\{4\\}-[0-9A-Fa-f]\\{4\\}-[0-9A-Fa-f]\\{4\\}-[0-9A-Fa-f]\\{12\\}" nil t)
-      (delete-backward-char 36)
+      (backward-char 36)
+      (delete-char 36)
       (insert (uuid-string)))))
 
 ;; ========== decodes/encodes a string of hex values to/from ascii string (VIPA DB specific) ========

@@ -1,8 +1,10 @@
 (source melpa)
 
-(files path-setup.el)
+(files path-setup.el speed7studio-utils.el)
 
 (depends-on "f")
 (depends-on "dash")
 (depends-on "names")
 (depends-on "ert-runner")
+(depends-on "ecukes")
+(depends-on "espuds")
