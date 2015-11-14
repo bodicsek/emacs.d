@@ -81,8 +81,8 @@
 (require 'package-extensions)
 (pe-force-refresh-if-requested)
 (pe-install-required-packages '(use-package cl-lib s f names dash diminish))
-;; ======================== set exec-path  ======================
 
+;; ======================== set exec-path  ======================
 (require 'path-setup)
 (ps-setup "~/.emacs.d/bin")
 
