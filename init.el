@@ -111,6 +111,14 @@
          ("C-x <left>" . windmove-left)
          ("C-x <right>" . windmove-right)))
 
+(use-package windsize
+  :init (progn
+          (global-set-key (kbd "C-S-M-<left>")  'windsize-left)
+          (global-set-key (kbd "C-S-M-<right>") 'windsize-right)
+          (global-set-key (kbd "C-S-M-<up>")    'windsize-up)
+          (global-set-key (kbd "C-S-M-<down>")  'windsize-down))
+  :ensure t)
+
 (use-package try
   :commands try
   :config (package-refresh-contents)
@@ -377,6 +385,11 @@
             (setq haskell-process-type 'cabal-repl))
   :ensure t)
 
+(use-package tuareg
+  :mode (("\\.ml\\'"  . tuareg-mode)
+         ("\\.mli\\'" . tuareg-mode))
+  :ensure t)
+
 (use-package magit
   :commands (magit-init
              magit-status)
@@ -617,3 +630,6 @@
               (setq inferior-lisp-program "~/.emacs.d/bin/ccl/lx86cl"))
             (slime-setup '(slime-fancy)))
   :ensure t)
+
+;;--------------------------------------------- EMACS generated ---------------------------------------------
+
