@@ -395,7 +395,7 @@
              magit-status)
   :init (progn
           (defalias 'gs 'magit-status)
-          (setq magit-completing-read-function 'magit-ido-completing-read)
+          (setq magit-completing-read-function 'magit-builtin-completing-read)
           (when (eq system-type 'windows-nt)
             (setenv "GIT_ASKPASS" "git-gui--askpass")))
   :ensure t)
