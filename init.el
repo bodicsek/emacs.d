@@ -437,39 +437,39 @@
   :init (defalias 'rss 'elfeed)
   :config (setq elfeed-feeds
                 '(
-                  "http://hataratkelo.blog.hu/rss2"
-                  "http://www.gog.com/en/frontpage/rss"
-                  "http://emberileg.tumblr.com/rss"
-                  "http://cvikli.tumblr.com/rss"
-                  "http://iddqd.blog.hu/rss2"
-                  "http://szakmailag.tumblr.com/rss"
-                  "http://www.napinemetteszt.com/feed"
-                  "http://mivanvelem.hu/?feed=rss2"
-                  ("http://444.hu/feed/" news)
-                  ("http://cink.hu/rss" news)
-                  ("http://www.wired.com/news/feeds/rss2/0,2610,,00.xml" news)
-                  ("http://www.theverge.com/rss/index.xml" news)
+                  ;; "http://hataratkelo.blog.hu/rss2"
+                  ;; "http://www.gog.com/en/frontpage/rss"
+                  ;; "http://emberileg.tumblr.com/rss"
+                  ;; "http://cvikli.tumblr.com/rss"
+                  ;; "http://iddqd.blog.hu/rss2"
+                  ;; "http://szakmailag.tumblr.com/rss"
+                  ;; "http://www.napinemetteszt.com/feed"
+                  ;; "http://mivanvelem.hu/?feed=rss2"
+                  ;; ("http://444.hu/feed/" news)
+                  ;; ("http://cink.hu/rss" news)
+                  ;; ("http://www.wired.com/news/feeds/rss2/0,2610,,00.xml" news)
+                  ;; ("http://www.theverge.com/rss/index.xml" news)
                   ("http://www.hwsw.hu/xml/latest_news_rss.xml" dev news)
                   ("http://hup.hu/backend_ext.php" dev news)
-                  ("http://rss.slashdot.org/Slashdot/slashdotDevelopers" dev news)
+                  ;; ("http://rss.slashdot.org/Slashdot/slashdotDevelopers" dev news)
                   ("https://planet.haskell.org/atom.xml" dev haskell)
                   ("http://lambda.jstolarek.com/feed/" dev haskell)
                   ("http://planet.emacsen.org/atom.xml" dev emacs)
                   ("http://www.masteringemacs.org/feed/" dev emacs)
                   ("http://planet.lisp.org/rss20.xml" dev lisp)
                   ("http://plastik.hu/feed/" dev)
-                  ("http://www.joelonsoftware.com/rss.xml" dev)
+                  ;; ("http://www.joelonsoftware.com/rss.xml" dev)
                   ("http://www.martinfowler.com/bliki/bliki.atom" dev)
-                  ("http://feeds2.feedburner.com/ElegantCode" dev)
-                  ("http://www.go-mono.com/monologue/index.rss" dev .net)
+                  ;; ("http://feeds2.feedburner.com/ElegantCode" dev)
+                  ;; ("http://www.go-mono.com/monologue/index.rss" dev .net)
                   ("http://blog.gdinwiddie.com/feed/atom/" dev)
                   ("http://android-developers.blogspot.com/feeds/posts/default?alt=rss" dev android)
-                  ("http://herbsutter.wordpress.com/feed/" dev c++)
+                  ;; ("http://herbsutter.wordpress.com/feed/" dev c++)
                   ("http://www.i-programmer.info/index.php?option=com_ninjarsssyndicator&feed_id=3&format=raw" dev)
-                  ("http://tifyty.wordpress.com/feed/" dev)
+                  ;; ("http://tifyty.wordpress.com/feed/" dev)
                   ("http://blogs.msdn.com/oldnewthing/rss.xml" dev windows)
                   ("http://www.raspberrypi.org/feed" gadget)
-                  ("http://tirania.org/blog/miguel.rss2" dev .net)
+                  ;; ("http://tirania.org/blog/miguel.rss2" dev .net)
                   ("http://feeds.feedburner.com/JonSkeetCodingBlog" dev .net)
                   ("http://xach.livejournal.com/data/atom" dev lisp)
                   ("http://feeds.feedburner.com/codinghorror/" dev)
@@ -479,6 +479,7 @@
                   ("http://blog.8thlight.com/feed/atom.xml" dev)
                   ("http://lambda-the-ultimate.org/rss.xml" dev)
                   ("http://ericlippert.com/feed/" dev)
+                  ("http://www.daemonology.net/hn-daily/index.rss" dev news hn)
                   ))
   :ensure t)
 
