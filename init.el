@@ -1,15 +1,13 @@
-;; ======================== add path for the extra libraries ==============
-;; Emacs Load Path
-(setq load-path (cons "~/.emacs.d/libraries" load-path))
+(setq gc-cons-threshold-orig gc-cons-threshold)
+(setq gc-cons-threshold 100000000)
+(add-hook 'after-init-hook #'(lambda () (setq gc-cons-threshold gc-cons-threshold-orig)))
 
 ;; ======================== set font ======================
 (if (eq system-type 'windows-nt)
     ;; fonts for windows
     (progn
-      (set-face-font 'default "-outline-Consolas-normal-normal-normal-normal-14-*-*-*-c-*-iso8859-1")
-      (set-face-font 'bold "-outline-Consolas-bold-normal-normal-normal-14-*-*-*-c-*-iso8859-1")
-      (set-face-font 'italic "-outline-Consolas-normal-italic-normal-normal-14-*-*-*-c-*-iso8859-1")
-      (set-face-font 'bold-italic "-outline-Consolas-bold-italic-normal-normal-14-*-*-*-c-*-iso8859-1"))
+      (add-to-list 'initial-frame-alist '(font . "Lucida Console-12"))
+      (add-to-list 'default-frame-alist '(font . "Lucida Console-12")))
   ;; fonts for linux
   (set-frame-font "DejaVu Sans Mono-10" nil t))
 
@@ -18,7 +16,8 @@
               indent-tabs-mode nil     ;;never use tabs for indentation
               )
 
-(setq scroll-step 1                    ;;line by line scrolling
+(setq
+      scroll-step 1                    ;;line by line scrolling
       scroll-conservatively 10000
       auto-window-vscroll nil
       backup-inhibited t               ;; disable backup files
@@ -27,9 +26,8 @@
       initial-major-mode 'text-mode    ;; text-mode in *scratch* buffer
       revert-without-query '(".*")     ;; revert buffer without prompt
       kill-whole-line t                ;; line is killed new line inclusive
-      browse-url-generic-program (executable-find "firefox") ;; default browser
-      browse-url-browser-function 'browse-url-generic
-      ediff-window-setup-function 'ediff-setup-windows-plain  ;; no new frame for ediff
+      browse-url-generic-program (executable-find "chrome") ;; default browser
+      ;browse-url-browser-function 'browse-url-generic
       gnus-init-file "~/.emacs.d/gnus.init.el"                ;; gnus init file
       visible-bell 1                   ;; disable bell
       org-notes-dir "~/ownCloud/OrgNotes"
@@ -51,22 +49,45 @@
 
 (prefer-coding-system 'utf-8)
 
-(fset 'yes-or-no-p 'y-or-n-p)          ;; only y and n
+(fset 'yes-or-no-p #'y-or-n-p)          ;; only y and n
 
-(global-set-key (kbd "M--") 'pop-tag-mark)
+(global-set-key (kbd "M--") #'pop-tag-mark)
 
-(defalias 'hr 'highlight-regexp)
-(defalias 'uhr 'unhighlight-regexp)
-(defalias 'hf 'hexl-find-file)
-(defalias 'hm 'hexl-mode)
-(defalias 'wm 'whitespace-mode)
-(defalias 'rb 'revert-buffer)
-(defalias 'nb 'rename-buffer)
-(defalias 'br 'browse-url)
+(defalias 'hr  #'highlight-regexp)
+(defalias 'uhr #'unhighlight-regexp)
+(defalias 'hf  #'hexl-find-file)
+(defalias 'hm  #'hexl-mode)
+(defalias 'wm  #'whitespace-mode)
+(defalias 'rb  #'revert-buffer)
+(defalias 'nb  #'rename-buffer)
+(defalias 'br  #'browse-url)
 
 (server-start)
 
+;; themes coming with emacs
+;;
+;; adwaita-theme.el
+;; deeper-blue-theme.el
+;; dichromacy-theme.el
+;; leuven-theme.el
+;; light-blue-theme.el
+;; manoj-dark-theme.el
+;; misterioso-theme.el
+;; tango-dark-theme.el
+;; tango-theme.el
+;; tsdh-dark-theme.el
+;; tsdh-light-theme.el
+;; wheatgrass-theme.el
+;; whiteboard-theme.el
+;; wombat-theme.el
+(load-theme 'leuven t)
+
+;; ======================== add path for the extra libraries ==============
+
+(setq load-path (cons "~/.emacs.d/libraries" load-path))
+
 ;; =========== setting up min package requirements ================
+
 (require 'package)
 (package-initialize)
 (mapc (lambda (p) (push p package-archives))
@@ -78,75 +99,35 @@
         (shm          . "melpa-stable")
         (ghc          . "melpa-stable")
         (company-ghc  . "melpa-stable")))
-(require 'package-extensions)
+(load-file "~/.emacs.d/libraries/package-extensions.el")
 (pe-force-refresh-if-requested)
-(pe-install-required-packages '(use-package cl-lib s f names dash diminish))
+(pe-install-packages '(use-package f dash names))
+(setq use-package-verbose t)
 
 ;; ======================== set exec-path  ======================
-(require 'path-setup)
-(ps-setup "~/.emacs.d/bin")
+
+(use-package path-setup
+  :demand    t
+  :load-path "~/.emacs.d/libraries"
+  :config    (ps-setup "~/.emacs.d/bin"))
 
 ;; ================================================================
 
-(use-package monokai-theme
-  :config (load-theme 'monokai t)
+(use-package which-key
+  :config (which-key-mode)
   :ensure t)
 
-(use-package spaceline-config
-  :config (progn
-            (setq spaceline-workspace-numbers-unicode t)
-            (spaceline-spacemacs-theme))
-  :ensure spaceline)
-
-(use-package eyebrowse
-  :config (progn
-            (setq eyebrowse-new-workspace t)
-            (eyebrowse-mode))
-  :diminish eyebrowse-mode
-  :ensure    t)
-
 (use-package windmove
-  :bind (("C-x <up>" . windmove-up)
-         ("C-x <down>" . windmove-down)
-         ("C-x <left>" . windmove-left)
+  :bind (("C-x <up>"    . windmove-up)
+         ("C-x <down>"  . windmove-down)
+         ("C-x <left>"  . windmove-left)
          ("C-x <right>" . windmove-right)))
 
 (use-package windsize
-  :init (progn
-          (global-set-key (kbd "C-S-M-<left>")  'windsize-left)
-          (global-set-key (kbd "C-S-M-<right>") 'windsize-right)
-          (global-set-key (kbd "C-S-M-<up>")    'windsize-up)
-          (global-set-key (kbd "C-S-M-<down>")  'windsize-down))
-  :ensure t)
-
-(use-package try
-  :commands try
-  :config (package-refresh-contents)
-  :ensure t)
-
-(use-package which-key
-  :config (progn (which-key-setup-side-window-right-bottom)
-                 (setq which-key-idle-delay 1.0
-                       which-key-prevent-C-h-from-cycling nil
-                       which-key-max-description-length 80)
-                 (which-key-mode))
-  :diminish which-key-mode
-  :ensure t)
-
-(use-package helm
-  :bind (("M-x"     . helm-M-x)
-         ("C-x C-f" . helm-find-files)
-         ("M-y"     . helm-show-kill-ring)
-         ("C-x b"   . helm-mini)
-         ("C-x C-b" . helm-buffers-list))
-  :config (progn
-            (setq helm-ff-auto-update-initial-value t
-                  helm-ff-lynx-style-map t
-                  enable-recursive-minibuffers t
-                  helm-grep-default-command "grep -a -d skip -n%cH -e %p %f"
-                  helm-grep-default-recurse-command "grep -a -d recurse -n%cH -e %p %f")
-            (helm-mode 1))
-  :diminish helm-mode
+  :bind (("C-S-M-<left>"  . windsize-left)
+         ("C-S-M-<right>" . windsize-right)
+         ("C-S-M-<up>"    . windsize-up)
+         ("C-S-M-<down>"  . windsize-down))
   :ensure t)
 
 (use-package bm
@@ -155,482 +136,191 @@
          ("S-<f2>" . bm-previous))
   :ensure t)
 
-(use-package dired+
+(use-package vlf
+  :init (require 'vlf-setup)
+  :ensure t)
+
+(use-package kpm-list
+  :load-path "~/.emacs.d/libraries"
+  :bind      ("C-x C-b" . kpm-list))
+
+;; ======================== dired ===============================
+
+(use-package dired
+  :commands (dired)
   :config (progn
             (put 'dired-find-alternate-file 'disabled nil)
-            (setq dired-do-highlighting t
-                  dired-dwim-target t
-                  dired-recursive-copies 'always
-                  dired-recursive-deletes 'always)
-            (add-to-list 'dired-compress-file-suffixes '("\\.zip\\'" ".zip" "unzip"))
-            (use-package dired-extensions
-              :config (define-key dired-mode-map "z" 'dired-zip-files))
-            (use-package dired-sort
-              :ensure t)
-            (use-package w32-browser
-              :if (eq system-type 'windows-nt)
-              :ensure t)
-            (use-package async
-              :config (dired-async-mode 1)
-              :ensure t))
+            (setq dired-recursive-copies              'always
+                  dired-recursive-deletes             'always
+                  dired-dwim-target                   t
+                  ls-lisp-dirs-first                  t
+                  ls-lisp-ignore-case                 t
+                  ls-lisp-verbosity                   '(uid)
+                  ls-lisp-format-time-list            '("%Y-%m-%d %H:%M" "%Y-%m-%d %H:%M")
+                  global-auto-revert-non-file-buffers t
+                  auto-revert-verbose                 nil)))
+
+(use-package dired-subtree
+  :after  (dired)
+  :config (bind-key "<tab>"     #'dired-subtree-toggle dired-mode-map)
+          (bind-key "<backtab>" #'dired-subtree-cycle  dired-mode-map)
+          (setq dired-subtree-use-backgrounds nil)
   :ensure t)
 
-(use-package vlf
-  :config (require 'vlf-setup)
+(use-package w32-browser
+  :if     (eq system-type 'windows-nt)
+  :after  (dired)
   :ensure t)
 
-(use-package company
-  :commands company-mode
-  :bind   (("C-SPC" . company-complete)
-           ("C-M-SPC" . company-etags))
-  :init   (progn
-            (add-hook 'after-init-hook 'global-company-mode)
-            (custom-set-variables
-             '(company-backends
-               (quote
-                (company-ghc
-                 company-bbdb
-                 company-nxml
-                 company-css
-                 company-eclim
-                 company-semantic
-                 company-clang
-                 company-xcode
-                 company-cmake
-                 (company-etags company-capf)
-                 (company-dabbrev-code company-gtags company-keywords)
-                 company-oddmuse
-                 company-files
-                 company-dabbrev)))))
-  :diminish company-mode
+(use-package w32-browser-extensions
+  :functions (w32-browser-open-dired-files)
+  :if        (eq system-type 'windows-nt)
+  :load-path "~/.emacs.d/libraries"
+  :after     (w32-browser)
+  :config    (bind-key "C-<return>" #'w32-browser-open-dired-files dired-mode-map))
+
+(use-package async
+  :after  (dired)
+  :config (dired-async-mode 1)
   :ensure t)
+
+(use-package wdired
+  :after  (dired)
+  :config (bind-key "w" #'wdired-change-to-wdired-mode dired-mode-map))
+
+;; ======================== project handling ===============================
 
 (use-package projectile
-  :init (projectile-global-mode)
+  :defer  t
+  :init   (add-hook 'after-init-hook #'projectile-global-mode)
   :config (progn
+
+            ;; TODO
             ;; regenerate project *.el TAGS
-            (define-key projectile-command-map (kbd "R")
-              #'(lambda ()
-                  (interactive)
-                  (when (projectile-project-p)
-                    (if (projectile-file-exists-p ".project.tags")
-                        (setq projectile-idle-timer-seconds 10
-                              projectile-enable-idle-timer  t
-                              projectile-tags-command "etags --regex=@.project.tags *.el test/*.el")
-                      (setq projectile-tags-command "find . -name \"*.el\" -print | xargs etags")))
-                  (projectile-regenerate-tags)))
+            ;; (define-key projectile-command-map (kbd "R")
+            ;;   #'(lambda ()
+            ;;       (interactive)
+            ;;       (when (projectile-project-p)
+            ;;         (if (projectile-file-exists-p ".project.tags")
+            ;;             (setq projectile-idle-timer-seconds 10
+            ;;                   projectile-enable-idle-timer  t
+            ;;                   projectile-tags-command "etags --regex=@.project.tags *.el test/*.el")
+            ;;           (setq projectile-tags-command "find . -name \"*.el\" -print | xargs etags")))
+            ;;       (projectile-regenerate-tags)))
+            
             ;; keyboard shortcut for project ibuffer
-            (define-key projectile-command-map (kbd "C-b") 'projectile-ibuffer)
-            ;; completion system is helm
-            (setq projectile-completion-system 'helm)
-            (use-package helm-projectile
-              :config (progn
-                        (setq projectile-use-git-grep t)
-                        (helm-projectile-on))
-              :ensure t)
-            ;; default action after project selection
-            (setq projectile-switch-project-action 'helm-projectile)
+            (define-key projectile-command-map (kbd "C-b") #'projectile-ibuffer)
+            
+            (setq projectile-use-git-grep t)
             ;; always use external tools for indexing
             (setq projectile-indexing-method 'alien)
             ;; always use cache
             (setq projectile-enable-caching t))
   :ensure t)
 
-(use-package skeletor
-  :commands (skeletor-create-project
-             skeletor-create-project-at)
-  :bind ("C-c p n" . skeletor-create-project-at)
-  :config (progn
-            (setq skeletor-init-with-git nil)
+;; ======================== ediff ===============================
 
-            (add-to-list 'skeletor-global-substitutions '("__AUTHOR__" . "bodicsek"))
+(use-package ediff
+  :functions (ediff-setup-windows-plain)
+  :commands  (ediff)
+  :config    (setq ediff-window-setup-function #'ediff-setup-windows-plain))  
 
-            (skeletor-define-template "haskell-lib-project"
-              :title "Haskell library project"
-              :substitutions '(("__SYNOPSIS__" . (lambda () (read-string "Synopsis: "))))
-              :after-creation (lambda (dir)
-                                (skeletor-shell-command "cabal sandbox init")))
-            (skeletor-define-template "haskell-lib-test-project"
-              :title "Haskell library and test-suite project"
-              :substitutions '(("__SYNOPSIS__" . (lambda () (read-string "Synopsis: "))))
-              :after-creation (lambda (dir)
-                                (skeletor-shell-command "cabal sandbox init")))
-            (skeletor-define-template "haskell-exe-lib-test-project"
-              :title "Haskell executable, library and test-suite project"
-              :substitutions '(("__SYNOPSIS__" . (lambda () (read-string "Synopsis: "))))
-              :after-creation (lambda (dir)
-                                (skeletor-shell-command "cabal sandbox init"))))
+;; ======================== git ===============================
+
+(use-package magit
+  :functions (magit-builtin-completing-read)
+  :commands  (magit-init magit-status)
+  :init      (progn
+               (defalias 'gs #'magit-status)
+               (when (eq system-type 'windows-nt)
+                 (setenv "GIT_ASKPASS" "git-gui--askpass")))
+  :config    (setq magit-completing-read-function #'magit-builtin-completing-read)
+  :ensure    t)
+
+;; ======================== intellisense ===============================
+
+(use-package company
+  :bind   (("C-SPC"   . company-complete)
+           ("C-M-SPC" . company-etags))
+  :init   (add-hook 'after-init-hook #'global-company-mode)
   :ensure t)
 
-(use-package overseer
-  :commands overseer-mode
+;; ======================== refactoring ===============================
+
+(use-package multiple-cursors
+  :bind   (("C->"     . mc/mark-next-like-this)
+           ("C-<"     . mc/mark-previous-like-this)
+           ("C-c C-<" . mc/mark-all-like-this))
   :ensure t)
 
-(use-package paredit
-  :commands enable-paredit-mode
-  :init (progn
-          (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
-          (add-hook 'lisp-mode-hook 'enable-paredit-mode)
-          (add-hook 'lisp-interaction-mode-hook 'enable-paredit-mode)
-          (add-hook 'ielm-mode-hook 'enable-paredit-mode))
-  :config (progn
-            (use-package paredit-menu
-              :ensure t)
-            (define-key paredit-mode-map (kbd "C-<right>") 'paredit-forward)
-            (define-key paredit-mode-map (kbd "C-<left>") 'paredit-backward)
-            (define-key paredit-mode-map (kbd "C-<up>") 'paredit-backward-up)
-            (define-key paredit-mode-map (kbd "C-<down>") 'paredit-forward-down)
-            (define-key paredit-mode-map (kbd "C-M-<right>") 'paredit-forward-slurp-sexp)
-            (define-key paredit-mode-map (kbd "C-M-<left>") 'paredit-forward-barf-sexp)
-            (define-key paredit-mode-map (kbd "C-M-<up>") 'paredit-backward-slurp-sexp)
-            (define-key paredit-mode-map (kbd "C-M-<down>") 'paredit-backward-barf-sexp))
-  :diminish paredit-mode
-  :ensure t)
-
-(use-package lisp-mode
-  :init (add-hook
-         'emacs-lisp-mode-hook
-         #'(lambda ()
-             (use-package s
-               :ensure t)
-             (use-package f
-               :ensure t)
-             (use-package names
-               :config (require 'names-dev)
-               :ensure t)
-             (use-package dash
-               :config (dash-enable-font-lock)
-               :ensure t)
-             (use-package cl-lib-highlight
-               :config (progn (cl-lib-highlight-initialize)
-                              (cl-lib-highlight-warn-cl-initialize))
-               :ensure t))))
+;; ======================== xml ===============================
 
 (use-package nxml-mode
   :mode (("\\.csproj\\'" . nxml-mode)
          ("\\.fsproj\\'" . nxml-mode)
-         ("\\.xaml\\'"   . nxml-mode))
-  :config (use-package nxml-extensions))
+         ("\\.xaml\\'"   . nxml-mode)))
 
-(use-package octave-mode
-  :mode ("\\.m$" . octave-mode))
+(use-package nxml-extensions
+  :load-path "~/.emacs.d/libraries"
+  :after (nxml-mode))
 
-(use-package csharp-mode
-  :mode ("\\.cs\\'" . csharp-mode)
-  :config (progn
-            (setq csharp-want-flymake-fixup nil) ;; no flymake
-            (use-package omnisharp
-              :config (progn
-                        ;; (setq omnisharp-debug t)
-                        (setq omnisharp-server-executable-path "~/.emacs.d/bin/omnisharp-server/OmniSharp.exe")
-                        (define-key csharp-mode-map (kbd "C-o <f12>") 'omnisharp-go-to-definition)
-                        (define-key csharp-mode-map (kbd "C-o C-<f12>") 'omnisharp-find-implementations)
-                        (define-key csharp-mode-map (kbd "C-o M-S-<f12>") 'omnisharp-find-usages)
-                        (define-key csharp-mode-map (kbd "C-o <f6>") 'omnisharp-build-in-emacs)
-                        (define-key csharp-mode-map (kbd "C-o C-S-t") 'omnisharp-navigate-to-solution-file)
-                        (define-key csharp-mode-map (kbd "C-o C-t") 'omnisharp-navigate-to-solution-member)
-                        (define-key csharp-mode-map (kbd "C-o M-ß") 'omnisharp-navigate-to-current-file-member)
-                        (define-key csharp-mode-map (kbd "C-o C-SPC") 'omnisharp-auto-complete)
-                        (define-key csharp-mode-map (kbd "C-o C-k C-d") 'omnisharp-code-format)
-                        (define-key csharp-mode-map (kbd "C-o C-S-r") 'omnisharp-run-code-action-refactoring)
-                        (define-key csharp-mode-map (kbd "C-o C-r C-r") 'omnisharp-rename-interactively)
-                        (define-key csharp-mode-map (kbd "C-o C-u C-u") '(lambda() (interactive) (omnisharp-unit-test "single")))
-                        (define-key csharp-mode-map (kbd "C-o C-u C-f") '(lambda() (interactive) (omnisharp-unit-test "fixture")))
-                        (define-key csharp-mode-map (kbd "C-o C-u C-a") '(lambda() (interactive) (omnisharp-unit-test "all")))
-                        )
-              :ensure t)
-            (when (file-exists-p omnisharp-server-executable-path)
-              (omnisharp-mode)))
-  :ensure t)
+;; ======================== elisp ===============================
 
-(use-package haskell-mode
-  :commands haskell-mode
+(use-package lisp-mode
+  :init (add-hook 'emacs-lisp-mode-hook
+                  (lambda ()
+                    (use-package cl-lib)
+                    (use-package s
+                      :ensure t)
+                    (use-package f
+                      :ensure t)
+                    (use-package names
+                      :config (require 'names-dev)
+                      :ensure t)
+                    (use-package dash
+                      :config (dash-enable-font-lock)
+                      :ensure t)
+                    (use-package cl-lib-highlight
+                      :config (progn (cl-lib-highlight-initialize)
+                                     (cl-lib-highlight-warn-cl-initialize))
+                      :ensure t)
+                    ;; Recompile if .elc exists
+                    (add-hook (make-local-variable 'after-save-hook)
+                              (lambda ()
+                                  (byte-recompile-file buffer-file-name)))
+                    ;; Enter reindents the current line adds a new line and indents the next line
+                    (define-key emacs-lisp-mode-map
+                            "\r" #'reindent-then-newline-and-indent))))
+
+(use-package paredit
+  :commands (enable-paredit-mode)
   :init (progn
-          (use-package hindent
-            :ensure t)
-          (use-package shm
-            :init (progn
-                    (add-hook 'haskell-mode-hook 'structured-haskell-mode))
-            :config (progn
-                      ;;(set-face-background 'shm-current-face "#eee8d5")
-                      ;;(set-face-background 'shm-quarantine-face "lemonchiffon")
-                      )
-            :ensure t)
-          ;; ghc-mod (requires cabal install ghc-mod)
-          (use-package ghc
-            :commands (ghc-init ghc-debug)
-            :init (add-hook 'haskell-mode-hook (lambda () (ghc-init)))
-            :ensure t)
-          ;; company-ghc (requires cabal install ghc-mod)
-          (use-package company-ghc
-            :config (progn
-                      (add-to-list 'company-backends 'company-ghc)
-                      (setq company-ghc-show-info t))
-            :ensure t))
+          (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
+          (add-hook 'lisp-mode-hook #'enable-paredit-mode)
+          (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+          (add-hook 'ielm-mode-hook #'enable-paredit-mode))
   :config (progn
-            ;; make the cabal binaries available
-            (when (file-directory-p "~/.cabal/bin")
-              (progn
-                (let ((my-cabal-path (expand-file-name "~/.cabal/bin")))
-                  (setenv "PATH" (concat my-cabal-path ":" (getenv "PATH")))
-                  (add-to-list 'exec-path my-cabal-path))
-                ;; to be able to use M-. to jump to definitions (requires cabal install hasktags)
-                ;; and the files must be in a cabal project
-                (setq haskell-tags-on-save t)
-                ;; M-x haskell-mode-stylish-buffer (requires cabal install stylish-haskell)
-                ))
-            ;; log ghci
-            (setq haskell-process-log t)
-            ;; use 'cabal repl' to use the cabal sandbox if present
-            (setq haskell-process-type 'cabal-repl))
+            (enable-paredit-mode)
+            (define-key paredit-mode-map (kbd "C-<right>")   #'paredit-forward)
+            (define-key paredit-mode-map (kbd "C-<left>")    #'paredit-backward)
+            (define-key paredit-mode-map (kbd "C-<up>")      #'paredit-backward-up)
+            (define-key paredit-mode-map (kbd "C-<down>")    #'paredit-forward-down)
+            (define-key paredit-mode-map (kbd "C-M-<right>") #'paredit-forward-slurp-sexp)
+            (define-key paredit-mode-map (kbd "C-M-<left>")  #'paredit-forward-barf-sexp)
+            (define-key paredit-mode-map (kbd "C-M-<up>")    #'paredit-backward-slurp-sexp)
+            (define-key paredit-mode-map (kbd "C-M-<down>")  #'paredit-backward-barf-sexp))
   :ensure t)
 
-(use-package tuareg
-  :mode (("\\.ml\\'"  . tuareg-mode)
-         ("\\.mli\\'" . tuareg-mode))
+(use-package paredit-menu
+  :after (paredit)
+  :ensure t)
+            
+(use-package overseer
+  :commands (overseer-mode)
   :ensure t)
 
-(use-package magit
-  :commands (magit-init
-             magit-status)
+(use-package eldoc
+  :commands (eldoc-mode)
   :init (progn
-          (defalias 'gs 'magit-status)
-          (setq magit-completing-read-function 'magit-builtin-completing-read)
-          (when (eq system-type 'windows-nt)
-            (setenv "GIT_ASKPASS" "git-gui--askpass")))
-  :ensure t)
-
-(use-package deft
-  :commands deft
-  :config (progn
-            (setq deft-extensions '("org"))
-            (setq deft-default-extension "org")
-            (setq deft-directory (concat org-notes-dir "/Notes"))
-            (setq deft-text-mode 'org-mode))
-  :ensure t)
-
-(use-package org
-  :commands org-mode
-  :config (let* ((org-dir            (concat org-notes-dir "/Notes"))
-                 (mobileorg-dir      (concat org-notes-dir "/MobileOrg"))
-                 (mobileorg-pullfile (concat org-dir "/links.org")))
-            (setq org-directory org-dir)
-            (setq org-agenda-files (list org-dir))
-            (setq org-mobile-directory mobileorg-dir)
-            (setq org-mobile-inbox-for-pull mobileorg-pullfile)
-            (setq org-todo-keywords '((sequence "TODO" "ACTIVE" "|" "DONE" "CANCEL")))
-            (setq org-completion-use-ido t))
-  :ensure t)
-
-(use-package hackernews
-  :commands hackernews
-  :init (defalias 'hn 'hackernews)
-  :ensure t)
-
-(use-package twittering-mode
-  :commands twittering-mode
-  :init (defalias 'twit 'twittering-mode)
-  :ensure t)
-
-(use-package elfeed
-  :commands elfeed
-  :init (defalias 'rss 'elfeed)
-  :config (setq elfeed-feeds
-                '(
-                  ;; "http://hataratkelo.blog.hu/rss2"
-                  ;; "http://www.gog.com/en/frontpage/rss"
-                  ;; "http://emberileg.tumblr.com/rss"
-                  ;; "http://cvikli.tumblr.com/rss"
-                  ;; "http://iddqd.blog.hu/rss2"
-                  ;; "http://szakmailag.tumblr.com/rss"
-                  ;; "http://www.napinemetteszt.com/feed"
-                  ;; "http://mivanvelem.hu/?feed=rss2"
-                  ;; ("http://444.hu/feed/" news)
-                  ;; ("http://cink.hu/rss" news)
-                  ;; ("http://www.wired.com/news/feeds/rss2/0,2610,,00.xml" news)
-                  ;; ("http://www.theverge.com/rss/index.xml" news)
-                  ("http://www.hwsw.hu/xml/latest_news_rss.xml" dev news)
-                  ("http://hup.hu/backend_ext.php" dev news)
-                  ;; ("http://rss.slashdot.org/Slashdot/slashdotDevelopers" dev news)
-                  ("https://planet.haskell.org/atom.xml" dev haskell)
-                  ("http://lambda.jstolarek.com/feed/" dev haskell)
-                  ("http://planet.emacsen.org/atom.xml" dev emacs)
-                  ("http://www.masteringemacs.org/feed/" dev emacs)
-                  ("http://planet.lisp.org/rss20.xml" dev lisp)
-                  ("http://plastik.hu/feed/" dev)
-                  ;; ("http://www.joelonsoftware.com/rss.xml" dev)
-                  ("http://www.martinfowler.com/bliki/bliki.atom" dev)
-                  ;; ("http://feeds2.feedburner.com/ElegantCode" dev)
-                  ;; ("http://www.go-mono.com/monologue/index.rss" dev .net)
-                  ("http://blog.gdinwiddie.com/feed/atom/" dev)
-                  ("http://android-developers.blogspot.com/feeds/posts/default?alt=rss" dev android)
-                  ;; ("http://herbsutter.wordpress.com/feed/" dev c++)
-                  ("http://www.i-programmer.info/index.php?option=com_ninjarsssyndicator&feed_id=3&format=raw" dev)
-                  ;; ("http://tifyty.wordpress.com/feed/" dev)
-                  ("http://blogs.msdn.com/oldnewthing/rss.xml" dev windows)
-                  ("http://www.raspberrypi.org/feed" gadget)
-                  ;; ("http://tirania.org/blog/miguel.rss2" dev .net)
-                  ("http://feeds.feedburner.com/JonSkeetCodingBlog" dev .net)
-                  ("http://xach.livejournal.com/data/atom" dev lisp)
-                  ("http://feeds.feedburner.com/codinghorror/" dev)
-                  ("http://mikehadlow.blogspot.com/feeds/posts/default?alt=rss" dev)
-                  ("http://channel9.msdn.com/Feeds/RSS/" dev microsoft)
-                  ("http://queue.acm.org/rss/feeds/queuecontent.xml" dev)
-                  ("http://blog.8thlight.com/feed/atom.xml" dev)
-                  ("http://lambda-the-ultimate.org/rss.xml" dev)
-                  ("http://ericlippert.com/feed/" dev)
-                  ("http://www.daemonology.net/hn-daily/index.rss" dev news hn)
-                  ))
-  :ensure t)
-
-(use-package mu4e
-  :if (not (eq system-type 'windows-nt))
-  :load-path "~/.emacs.d/libraries/mu4e"
-  :commands mu4e
-  :config (progn
-            ;; default
-            ;; (setq mu4e-maildir "~/Maildir")
-
-            (setq mu4e-drafts-folder "/[Gmail].Drafts")
-            (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
-            (setq mu4e-trash-folder  "/[Gmail].Trash")
-
-            ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
-            (setq mu4e-sent-messages-behavior 'delete)
-
-            ;; setup some handy shortcuts
-            ;; you can quickly switch to your Inbox -- press ``ji''
-            ;; then, when you want archive some messages, move them to
-            ;; the 'All Mail' folder by pressing ``ma''.
-            (setq mu4e-maildir-shortcuts
-                  '( ("/INBOX"               . ?i)
-                     ("/[Gmail].Sent Mail"   . ?s)
-                     ("/[Gmail].Trash"       . ?t)
-                     ("/[Gmail].All Mail"    . ?a)))
-
-            ;; appending own bookmarks
-            ;; to invoke a search bookmark press b and letter defined here
-            (add-to-list 'mu4e-bookmarks
-                         '("flag:flagged" "Flagged messages" ?f)
-                         t)
-
-            ;; allow for updating mail using 'U' in the main view:
-            (setq mu4e-get-mail-command "offlineimap")
-
-            ;; enable inline images
-            (setq mu4e-view-show-images t)
-            ;; use imagemagick, if available
-            (when (fboundp 'imagemagick-register-types)
-              (imagemagick-register-types))
-
-            ;; rendering html mails
-            ;; (setq mu4e-html2text-command "w3m -dump -T text/html") ;; requires package w3m
-            ;; (setq mu4e-html2text-command "html2text -utf8 -width 72") ;; requires package html2text
-            ;; (setq mu4e-html2text-command "html2markdown | grep -v '&nbsp_place_holder;'") ;; requires package python-html2text
-            (use-package mu4e-contrib)
-            (setq mu4e-html2text-command 'mu4e-shr2text) ;; requires emacs compiled with libxml2 support
-
-            ;; something about ourselves
-            (setq
-             user-mail-address "david.nabraczky@gmail.com"
-             user-full-name  "David Nabraczky")
-
-            ;; make sure the gnutls command line utils are installed
-            ;; package 'gnutls-bin' in Debian/Ubuntu
-            (use-package smtpmail
-              :config (setq message-send-mail-function 'smtpmail-send-it
-                            smtpmail-stream-type 'starttls
-                            smtpmail-default-smtp-server "smtp.gmail.com"
-                            smtpmail-smtp-server "smtp.gmail.com"
-                            smtpmail-smtp-service 587))
-
-            ;; show mu4e maildirs summary in mu4e-main-view
-            (use-package mu4e-maildirs-extension
-              :config (mu4e-maildirs-extension)
-              :ensure t)
-
-            (setq mu4e-hide-index-messages t)
-
-            ;; don't keep message buffers around
-            (setq message-kill-buffer-on-exit t)))
-
-(use-package g-music
-  :commands g-music
-  :init (progn (use-package s
-                 :ensure t)
-               (use-package dash
-                 :ensure t)
-               (use-package names
-                 :ensure t)
-               (use-package request
-                 :ensure t)
-               (use-package libmpdee
-                 :ensure t)
-               (if (or (eq system-type 'windows-nt) (eq system-type 'msdos))
-                   (add-hook 'g-music-mode-hook
-                             '(lambda ()
-                                (setq g-music-proxy-process
-                                      "c:/tools/python2/python.exe c:/tools/python2/Scripts/GMusicProxy --conf c:/Users/DNabraczky/.gmusicproxy.cfg"))))))
-
-(use-package copenrelational
-  :bind ("<f4>" . c-open-relational-file))
-
-(use-package copy-paste-utils
-  :bind (("C-d" . copy-paste-selection)
-         ("C-k" . my-kill-line)))
-
-(use-package speed7studio-utils
-  :commands (replace-guids
-             decode-hex-string
-             encode-hex-string)
-  :config (use-package uuid
-            :ensure t))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; DISABLED
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(use-package leuven-theme
-  :disabled
-  :config (progn
-            (load-theme 'leuven t)
-            (set-face-attribute 'hl-line nil
-                                :background "powder blue"))
-  :ensure t)
-
-(use-package ibuffer
-  :disabled
-  :bind ("C-x C-b" . ibuffer))
-
-(use-package ido
-  :disabled
-  :init (progn
-          (setq ido-everywhere t)
-          (setq ido-enable-flex-matching t)
-          (setq ido-auto-merge-work-directories-length -1)
-          (setq ido-use-faces nil))
-  :config (progn
-            (ido-mode 1)
-            (use-package flx-ido
-              :config (flx-ido-mode 1)
-              :ensure t)
-            (use-package smex
-              :bind (("M-x" . smex)
-                     ("M-X" . smex-major-mode-commands)
-                     ("C-c C-c M-x" . execute-extended-command))
-              :ensure t)
-            (use-package ido-ubiquitous
-              :config (ido-ubiquitous-mode 1)
-              :ensure t)))
-
-(use-package slime
-  :disabled
-  :commands slime
-  :config (progn
-            (if (eq system-type 'windows-nt)
-                (setq inferior-lisp-program "~/.emacs.d/bin/ccl/wx86cl64.exe")
-              (setq inferior-lisp-program "~/.emacs.d/bin/ccl/lx86cl"))
-            (slime-setup '(slime-fancy)))
-  :ensure t)
-
-;;--------------------------------------------- EMACS generated ---------------------------------------------
+          (add-hook 'ielm-mode-hook #'eldoc-mode)))
 

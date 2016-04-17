@@ -1,10 +1,16 @@
 (source melpa)
 
-(files path-setup.el speed7studio-utils.el)
+(files path-setup.el w32-browser-extensions.el)
 
 (depends-on "f")
 (depends-on "dash")
 (depends-on "names")
-(depends-on "ert-runner")
-(depends-on "ecukes")
-(depends-on "espuds")
+(depends-on "w32-browser")
+
+(development
+ (depends-on "s")
+ (depends-on "ert-runner")
+ (depends-on "ert-expectations")
+ (depends-on "el-mock")
+ (depends-on "ecukes")
+ (depends-on "espuds"))

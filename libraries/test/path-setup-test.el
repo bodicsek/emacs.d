@@ -4,7 +4,7 @@
   (with-test-rootdir "test/bin"
                      (let ((eligible-test-dirs (ps--dirs "test/bin" '("bin"))))
                        ;; there should be only one eligible directory
-                       (should (equal (-count 's-present? eligible-test-dirs) 1))
+                       (should (equal (-count #'s-present? eligible-test-dirs) 1))
                        ;; the eligible directory is the root directory
                        (should (-all?
                                 (lambda (dir) (s-ends-with? "test/bin" dir))
@@ -35,20 +35,22 @@
 
 (ert-deftest ps--exec-path-setup/eligible-dirs-are-added-to-exec-path ()
   (with-test-rootdir "test/root"
+                     ;; arrange
                      (f-mkdir "test/root/bin")
                      (f-mkdir "test/root/lib")
-                     ;; precondition
                      (should (-none? (lambda (e) (s-contains? "test/root" e)) exec-path))
+                     ;; act
                      (ps--exec-path-setup "test/root")
-                     ;; postcondition
+                     ;; assert
                      (should (equal (-count (lambda (e) (s-contains? "test/root" e)) exec-path) 2))))
 
 (ert-deftest ps--path-setup/eligible-dirs-are-added-to-path ()
   (with-test-rootdir "test/root"
+                     ;; arrange
                      (f-mkdir "test/root/bin")
                      (f-mkdir "test/root/lib")
-                     ;; precondition
                      (should (-none? (lambda (e) (s-contains? "test/root" e)) (s-split ";" (getenv "PATH"))))
+                     ;; act
                      (ps--path-setup "test/root")
-                     ;; postcondition
+                     ;; assert
                      (should (equal (-count (lambda (e) (s-contains? "test/root" e)) (s-split ";" (getenv "PATH"))) 2))))

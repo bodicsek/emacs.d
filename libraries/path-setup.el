@@ -1,7 +1,8 @@
-(require 'f)
-(require 'dash)
-(require 'names)
-(require 'cl-lib)
+(eval-when-compile
+  (require 'cl-lib)
+  (require 'f)
+  (require 'dash)
+  (require 'names))
 
 (define-namespace ps-
 

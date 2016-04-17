@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 ;;;; various package extension functions
 
 (defun pe-force-refresh-if-requested ()
@@ -7,7 +9,7 @@
       (package-refresh-contents)
       (setq command-line-args (delete install-arg command-line-args)))))
 
-(defun pe-install-required-packages (package-list)
+(defun pe-install-packages (package-list)
   "Installs the packages in package-list."
   (mapc
    (lambda (package) 
@@ -17,3 +19,4 @@
    package-list))
 
 (provide 'package-extensions)
+
