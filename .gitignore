@@ -20,3 +20,7 @@
 /eshell/
 /.#smex-items
 /helm-doc.org
+**/*.elc
+**/.cask
+/abbrev_defs
+/recentf
