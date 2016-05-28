@@ -27,8 +27,8 @@
       revert-without-query '(".*")     ;; revert buffer without prompt
       kill-whole-line t                ;; line is killed new line inclusive
       browse-url-generic-program (executable-find "chrome") ;; default browser
-      ;browse-url-browser-function 'browse-url-generic
-      gnus-init-file "~/.emacs.d/gnus.init.el"                ;; gnus init file
+      ;; browse-url-browser-function 'browse-url-generic
+      ;; gnus-init-file "~/.emacs.d/gnus.init.el"                ;; gnus init file
       visible-bell 1                   ;; disable bell
       org-notes-dir "~/ownCloud/OrgNotes"
       )
@@ -51,8 +51,6 @@
 
 (fset 'yes-or-no-p #'y-or-n-p)          ;; only y and n
 
-(global-set-key (kbd "M--") #'pop-tag-mark)
-
 (defalias 'hr  #'highlight-regexp)
 (defalias 'uhr #'unhighlight-regexp)
 (defalias 'hf  #'hexl-find-file)
@@ -62,7 +60,7 @@
 (defalias 'nb  #'rename-buffer)
 (defalias 'br  #'browse-url)
 
-(server-start)
+;; (server-start)
 
 ;; themes coming with emacs
 ;;
@@ -80,7 +78,7 @@
 ;; wheatgrass-theme.el
 ;; whiteboard-theme.el
 ;; wombat-theme.el
-(load-theme 'leuven t)
+(load-theme 'adwaita t)
 
 ;; ======================== add path for the extra libraries ==============
 
@@ -89,6 +87,7 @@
 ;; =========== setting up min package requirements ================
 
 (require 'package)
+(setq package-enable-at-startup nil)
 (package-initialize)
 (mapc (lambda (p) (push p package-archives))
       '(("melpa"        . "http://melpa.org/packages/")
@@ -188,33 +187,39 @@
   :after  (dired)
   :config (bind-key "w" #'wdired-change-to-wdired-mode dired-mode-map))
 
+;; ======================== org mode ===============================
+
+(use-package org
+  :commands org-mode
+  :config (let* ((org-dir            (concat org-notes-dir "/Notes"))
+                 (mobileorg-dir      (concat org-notes-dir "/MobileOrg"))
+                 (mobileorg-pullfile (concat org-dir "/links.org")))
+            (setq org-directory org-dir)
+            (setq org-agenda-files (list org-dir))
+            (setq org-mobile-directory mobileorg-dir)
+            (setq org-mobile-inbox-for-pull mobileorg-pullfile)
+            (setq org-todo-keywords '((sequence "TODO" "ACTIVE" "|" "DONE" "CANCEL")))
+            (setq org-completion-use-ido t))
+  :ensure t)
+
+(use-package deft
+  :commands (deft)
+  :config (progn
+            (setq deft-extensions '("org"))
+            (setq deft-default-extension "org")
+            (setq deft-directory (concat org-notes-dir "/Notes"))
+            (setq deft-text-mode 'org-mode))
+  :ensure t)
+
 ;; ======================== project handling ===============================
 
 (use-package projectile
   :defer  t
   :init   (add-hook 'after-init-hook #'projectile-global-mode)
   :config (progn
-
-            ;; TODO
-            ;; regenerate project *.el TAGS
-            ;; (define-key projectile-command-map (kbd "R")
-            ;;   #'(lambda ()
-            ;;       (interactive)
-            ;;       (when (projectile-project-p)
-            ;;         (if (projectile-file-exists-p ".project.tags")
-            ;;             (setq projectile-idle-timer-seconds 10
-            ;;                   projectile-enable-idle-timer  t
-            ;;                   projectile-tags-command "etags --regex=@.project.tags *.el test/*.el")
-            ;;           (setq projectile-tags-command "find . -name \"*.el\" -print | xargs etags")))
-            ;;       (projectile-regenerate-tags)))
-            
-            ;; keyboard shortcut for project ibuffer
             (define-key projectile-command-map (kbd "C-b") #'projectile-ibuffer)
-            
             (setq projectile-use-git-grep t)
-            ;; always use external tools for indexing
             (setq projectile-indexing-method 'alien)
-            ;; always use cache
             (setq projectile-enable-caching t))
   :ensure t)
 
@@ -243,6 +248,8 @@
   :bind   (("C-SPC"   . company-complete)
            ("C-M-SPC" . company-etags))
   :init   (add-hook 'after-init-hook #'global-company-mode)
+  :config (progn
+            (setq company-tooltip-align-annotations t))
   :ensure t)
 
 ;; ======================== refactoring ===============================
@@ -251,6 +258,14 @@
   :bind   (("C->"     . mc/mark-next-like-this)
            ("C-<"     . mc/mark-previous-like-this)
            ("C-c C-<" . mc/mark-all-like-this))
+  :ensure t)
+
+;; ======================== flycheck ===============================
+
+(use-package flycheck
+  :defer t
+  :config (progn
+            (setq flycheck-check-syntax-automatically '(save mode-enabled new-line)))
   :ensure t)
 
 ;; ======================== xml ===============================
@@ -285,9 +300,11 @@
                                      (cl-lib-highlight-warn-cl-initialize))
                       :ensure t)
                     ;; Recompile if .elc exists
-                    (add-hook (make-local-variable 'after-save-hook)
+                    (add-hook 'after-save-hook
                               (lambda ()
-                                  (byte-recompile-file buffer-file-name)))
+                                (byte-recompile-file buffer-file-name))
+                              nil
+                              t)
                     ;; Enter reindents the current line adds a new line and indents the next line
                     (define-key emacs-lisp-mode-map
                             "\r" #'reindent-then-newline-and-indent))))
@@ -324,3 +341,112 @@
   :init (progn
           (add-hook 'ielm-mode-hook #'eldoc-mode)))
 
+;; ======================== ts ===============================
+
+(use-package tide
+  :mode (("\\.ts$" . typescript-mode))
+  :init (add-hook 'typescript-mode-hook
+                  (lambda ()
+                    (tide-setup)
+                    (flycheck-mode)
+                    (eldoc-mode)
+                    (company-mode-on)))
+  :config (progn
+            (use-package typescript-mode
+              :ensure t)
+            ;; formats the buffer before saving
+            (add-hook 'before-save-hook 'tide-format-before-save)
+            ;; format options
+            ;; see https://github.com/Microsoft/TypeScript/blob/cc58e2d7eb144f0b2ff89e6a6685fb4deaa24fde/src/server/protocol.d.ts#L421-473 for the full list available options
+            (setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t
+                                        :placeOpenBraceOnNewLineForFunctions nil)))
+  :ensure t)
+
+;; ======================== email ===============================
+
+(use-package mu4e
+  :load-path "~/.emacs.d/libraries/mu4e"
+  :commands mu4e
+  :config (progn
+            (setq mu4e-mu-binary "bash.exe -c mu")
+            (setq mu4e-get-mail-command "bash.exe -c offlineimap")
+            ;; default
+            ;; (setq mu4e-maildir "~/Maildir")
+
+            (setq mu4e-drafts-folder "/[Gmail].Drafts")
+            (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
+            (setq mu4e-trash-folder  "/[Gmail].Trash")
+
+            ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
+            (setq mu4e-sent-messages-behavior 'delete)
+
+            ;; setup some handy shortcuts
+            ;; you can quickly switch to your Inbox -- press ``ji''
+            ;; then, when you want archive some messages, move them to
+            ;; the 'All Mail' folder by pressing ``ma''.
+            (setq mu4e-maildir-shortcuts
+                  '( ("/INBOX"               . ?i)
+                     ("/[Gmail].Sent Mail"   . ?s)
+                     ("/[Gmail].Trash"       . ?t)
+                     ("/[Gmail].All Mail"    . ?a)))
+
+            ;; appending own bookmarks
+            ;; to invoke a search bookmark press b and letter defined here
+            (add-to-list 'mu4e-bookmarks
+                         '("flag:flagged" "Flagged messages" ?f)
+                         t)
+
+            ;; allow for updating mail using 'U' in the main view:
+            (setq mu4e-get-mail-command "offlineimap")
+
+            ;; enable inline images
+            (setq mu4e-view-show-images t)
+            ;; use imagemagick, if available
+            (when (fboundp 'imagemagick-register-types)
+              (imagemagick-register-types))
+
+            ;; rendering html mails
+            ;; (setq mu4e-html2text-command "w3m -dump -T text/html") ;; requires package w3m
+            ;; (setq mu4e-html2text-command "html2text -utf8 -width 72") ;; requires package html2text
+            ;; (setq mu4e-html2text-command "html2markdown | grep -v '&nbsp_place_holder;'") ;; requires package python-html2text
+            ;; (use-package mu4e-contrib)
+            ;; (setq mu4e-html2text-command 'mu4e-shr2text) ;; requires emacs compiled with libxml2 support
+
+            ;; something about ourselves
+            (setq
+             user-mail-address "david.nabraczky@gmail.com"
+             user-full-name  "David Nabraczky")
+
+            ;; make sure the gnutls command line utils are installed
+            ;; package 'gnutls-bin' in Debian/Ubuntu
+            (use-package smtpmail
+              :config (setq message-send-mail-function 'smtpmail-send-it
+                            smtpmail-stream-type 'starttls
+                            smtpmail-default-smtp-server "smtp.gmail.com"
+                            smtpmail-smtp-server "smtp.gmail.com"
+                            smtpmail-smtp-service 587))
+
+            ;; show mu4e maildirs summary in mu4e-main-view
+            (use-package mu4e-maildirs-extension
+              :config (mu4e-maildirs-extension-load)
+              :ensure t)
+
+            (setq mu4e-hide-index-messages t)
+
+            ;; don't keep message buffers around
+            (setq message-kill-buffer-on-exit t)))
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (windsize which-key w32-browser vlf use-package projectile paredit-menu overseer names multiple-cursors mu4e-maildirs-extension magit f dired-subtree deft company cl-lib-highlight bm))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
