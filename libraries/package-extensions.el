@@ -2,14 +2,14 @@
 
 ;;;; various package extension functions
 
-(defun pe-force-refresh-if-requested ()
+(defun package-force-refresh-if-requested ()
   "If the --install command line argument is present it refreshes the package content."
   (let ((install-arg "--install"))
     (when (member install-arg command-line-args)
       (package-refresh-contents)
       (setq command-line-args (delete install-arg command-line-args)))))
 
-(defun pe-install-packages (package-list)
+(defun package-install-packages (package-list)
   "Installs the packages in package-list."
   (mapc
    (lambda (package) 

@@ -4,7 +4,7 @@
   (require 'dash)
   (require 'names))
 
-(define-namespace ps-
+(define-namespace exec-path-
 
 (defun -dirs (rootpath dirnames)
   "Returns all directories with name in 'dirnames'. 'rootpath' is included if eligible."
@@ -32,5 +32,5 @@
 
 )
 
-(provide 'path-setup)
+(provide 'exec-path)
 

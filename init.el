@@ -87,6 +87,7 @@
 ;; =========== setting up min package requirements ================
 
 (require 'package)
+(require 'package-extensions)
 (setq package-enable-at-startup nil)
 (package-initialize)
 (mapc (lambda (p) (push p package-archives))
@@ -98,17 +99,16 @@
         (shm          . "melpa-stable")
         (ghc          . "melpa-stable")
         (company-ghc  . "melpa-stable")))
-(load-file "~/.emacs.d/libraries/package-extensions.el")
-(pe-force-refresh-if-requested)
-(pe-install-packages '(use-package f dash names))
+(package-force-refresh-if-requested)
+(package-install-packages '(use-package f dash names))
 (setq use-package-verbose t)
 
 ;; ======================== set exec-path  ======================
 
-(use-package path-setup
+(use-package exec-path
   :demand    t
   :load-path "~/.emacs.d/libraries"
-  :config    (ps-setup "~/.emacs.d/bin"))
+  :config    (exec-path-setup "~/.emacs.d/bin"))
 
 ;; ================================================================
 
@@ -366,80 +366,6 @@
             (setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t
                                         :placeOpenBraceOnNewLineForFunctions nil)))
   :ensure t)
-
-;; ======================== email ===============================
-
-(use-package mu4e
-  :load-path "~/.emacs.d/libraries/mu4e"
-  :commands mu4e
-  :config (progn
-            (setq mu4e-mu-binary "bash.exe -c mu")
-            (setq mu4e-get-mail-command "bash.exe -c offlineimap")
-            ;; default
-            ;; (setq mu4e-maildir "~/Maildir")
-
-            (setq mu4e-drafts-folder "/[Gmail].Drafts")
-            (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
-            (setq mu4e-trash-folder  "/[Gmail].Trash")
-
-            ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
-            (setq mu4e-sent-messages-behavior 'delete)
-
-            ;; setup some handy shortcuts
-            ;; you can quickly switch to your Inbox -- press ``ji''
-            ;; then, when you want archive some messages, move them to
-            ;; the 'All Mail' folder by pressing ``ma''.
-            (setq mu4e-maildir-shortcuts
-                  '( ("/INBOX"               . ?i)
-                     ("/[Gmail].Sent Mail"   . ?s)
-                     ("/[Gmail].Trash"       . ?t)
-                     ("/[Gmail].All Mail"    . ?a)))
-
-            ;; appending own bookmarks
-            ;; to invoke a search bookmark press b and letter defined here
-            (add-to-list 'mu4e-bookmarks
-                         '("flag:flagged" "Flagged messages" ?f)
-                         t)
-
-            ;; allow for updating mail using 'U' in the main view:
-            (setq mu4e-get-mail-command "offlineimap")
-
-            ;; enable inline images
-            (setq mu4e-view-show-images t)
-            ;; use imagemagick, if available
-            (when (fboundp 'imagemagick-register-types)
-              (imagemagick-register-types))
-
-            ;; rendering html mails
-            ;; (setq mu4e-html2text-command "w3m -dump -T text/html") ;; requires package w3m
-            ;; (setq mu4e-html2text-command "html2text -utf8 -width 72") ;; requires package html2text
-            ;; (setq mu4e-html2text-command "html2markdown | grep -v '&nbsp_place_holder;'") ;; requires package python-html2text
-            ;; (use-package mu4e-contrib)
-            ;; (setq mu4e-html2text-command 'mu4e-shr2text) ;; requires emacs compiled with libxml2 support
-
-            ;; something about ourselves
-            (setq
-             user-mail-address "david.nabraczky@gmail.com"
-             user-full-name  "David Nabraczky")
-
-            ;; make sure the gnutls command line utils are installed
-            ;; package 'gnutls-bin' in Debian/Ubuntu
-            (use-package smtpmail
-              :config (setq message-send-mail-function 'smtpmail-send-it
-                            smtpmail-stream-type 'starttls
-                            smtpmail-default-smtp-server "smtp.gmail.com"
-                            smtpmail-smtp-server "smtp.gmail.com"
-                            smtpmail-smtp-service 587))
-
-            ;; show mu4e maildirs summary in mu4e-main-view
-            (use-package mu4e-maildirs-extension
-              :config (mu4e-maildirs-extension-load)
-              :ensure t)
-
-            (setq mu4e-hide-index-messages t)
-
-            ;; don't keep message buffers around
-            (setq message-kill-buffer-on-exit t)))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
