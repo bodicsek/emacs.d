@@ -6,8 +6,8 @@
 (if (eq system-type 'windows-nt)
     ;; fonts for windows
     (progn
-      (add-to-list 'initial-frame-alist '(font . "Lucida Console-12"))
-      (add-to-list 'default-frame-alist '(font . "Lucida Console-12")))
+      (add-to-list 'initial-frame-alist '(font . "Lucida Console-11"))
+      (add-to-list 'default-frame-alist '(font . "Lucida Console-11")))
   ;; fonts for linux
   (set-frame-font "DejaVu Sans Mono-10" nil t))
 
@@ -78,7 +78,7 @@
 ;; wheatgrass-theme.el
 ;; whiteboard-theme.el
 ;; wombat-theme.el
-(load-theme 'adwaita t)
+;; (load-theme 'leuven t)
 
 ;; ======================== add path for the extra libraries ==============
 
@@ -111,6 +111,11 @@
   :config    (ps-setup "~/.emacs.d/bin"))
 
 ;; ================================================================
+
+(use-package atom-dark-theme
+  :demand t
+  :config (load-theme 'atom-dark t)
+  :ensure t)
 
 (use-package which-key
   :config (which-key-mode)
@@ -443,7 +448,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (windsize which-key w32-browser vlf use-package projectile paredit-menu overseer names multiple-cursors mu4e-maildirs-extension magit f dired-subtree deft company cl-lib-highlight bm))))
+    (atom-dark-theme atom-one-dark-theme multiple-cursors dired-subtree windsize which-key w32-browser vlf uuid use-package twittering-mode tuareg try spaceline skeletor shm request paredit-menu paredit overseer omnisharp names mu4e-maildirs-extension monokai-theme magit libmpdee hindent helm-projectile hackernews eyebrowse elfeed dired-sort dired+ deft company-ghc cl-lib-highlight bm))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
