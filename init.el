@@ -16,8 +16,7 @@
               indent-tabs-mode nil     ;;never use tabs for indentation
               )
 
-(setq
-      scroll-step 1                    ;;line by line scrolling
+(setq scroll-step 1                    ;;line by line scrolling
       scroll-conservatively 10000
       auto-window-vscroll nil
       backup-inhibited t               ;; disable backup files
@@ -30,8 +29,7 @@
       ;; browse-url-browser-function 'browse-url-generic
       ;; gnus-init-file "~/.emacs.d/gnus.init.el"                ;; gnus init file
       visible-bell 1                   ;; disable bell
-      org-notes-dir "~/ownCloud/OrgNotes"
-      )
+      org-notes-dir "~/ownCloud/OrgNotes")
 
 (mapc (lambda (mode) (when (fboundp mode) (apply mode '(0))))
       '(tool-bar-mode
@@ -57,7 +55,7 @@
 (defalias 'hm  #'hexl-mode)
 (defalias 'wm  #'whitespace-mode)
 (defalias 'rb  #'revert-buffer)
-(defalias 'nb  #'rename-buffer)
+(defalias 'rnb  #'rename-buffer)
 (defalias 'br  #'browse-url)
 
 ;; (server-start)
@@ -80,14 +78,14 @@
 ;; wombat-theme.el
 ;; (load-theme 'leuven t)
 
-;; ======================== add path for the extra libraries ==============
+;; =========== setting up min package requirements ================
 
 (setq load-path (cons "~/.emacs.d/libraries" load-path))
 
-;; =========== setting up min package requirements ================
-
+(require 'cl-lib)
 (require 'package)
 (require 'package-extensions)
+
 (setq package-enable-at-startup nil)
 (package-initialize)
 (mapc (lambda (p) (push p package-archives))
@@ -101,6 +99,7 @@
         (company-ghc  . "melpa-stable")))
 (package-force-refresh-if-requested)
 (package-install-packages '(use-package f dash names))
+
 (setq use-package-verbose t)
 
 ;; ======================== set exec-path  ======================
@@ -110,11 +109,15 @@
   :load-path "~/.emacs.d/libraries"
   :config    (exec-path-setup "~/.emacs.d/bin"))
 
-;; ================================================================
+;; ========================= basics =============================
 
 (use-package atom-dark-theme
-  :demand t
+  :disabled
   :config (load-theme 'atom-dark t)
+  :ensure t)
+
+(use-package darkokai-theme
+  :config (load-theme 'darkokai t)
   :ensure t)
 
 (use-package which-key
@@ -228,7 +231,7 @@
             (setq projectile-enable-caching t))
   :ensure t)
 
-;; ======================== ediff ===============================
+;; ======================== diff ===============================
 
 (use-package ediff
   :functions (ediff-setup-windows-plain)
@@ -270,7 +273,7 @@
 (use-package flycheck
   :defer t
   :config (progn
-            (setq flycheck-check-syntax-automatically '(save mode-enabled new-line)))
+            (setq flycheck-check-syntax-automativcally '(save mode-enabled new-line)))
   :ensure t)
 
 ;; ======================== xml ===============================
@@ -367,6 +370,7 @@
                                         :placeOpenBraceOnNewLineForFunctions nil)))
   :ensure t)
 
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -374,7 +378,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (atom-dark-theme atom-one-dark-theme multiple-cursors dired-subtree windsize which-key w32-browser vlf uuid use-package twittering-mode tuareg try spaceline skeletor shm request paredit-menu paredit overseer omnisharp names mu4e-maildirs-extension monokai-theme magit libmpdee hindent helm-projectile hackernews eyebrowse elfeed dired-sort dired+ deft company-ghc cl-lib-highlight bm))))
+    (tide darkokai-theme atom-dark-theme atom-one-dark-theme multiple-cursors dired-subtree windsize which-key w32-browser vlf uuid use-package twittering-mode tuareg try spaceline skeletor shm request paredit-menu paredit overseer omnisharp names mu4e-maildirs-extension monokai-theme magit libmpdee hindent helm-projectile hackernews eyebrowse elfeed dired-sort dired+ deft company-ghc cl-lib-highlight bm))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

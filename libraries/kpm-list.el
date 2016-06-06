@@ -157,7 +157,7 @@
                       'dir-link t)))
 
 (defun kpml/insert-buffer-line (buffer)
-  (destructuring-bind (name dir filename mode modified highlight relative) buffer
+  (cl-destructuring-bind (name dir filename mode modified highlight relative) buffer
     (insert (propertize (if modified "* " "  ") 'face 'kpm-list-modified-face))
     (insert (propertize filename 'face (if highlight 'kpm-list-buffer-highlight-face 'kpm-list-buffer-face)))
     (insert (propertize " "  'display '(space . (:align-to 40))))
@@ -174,7 +174,7 @@
     (insert "\n")))
 
 (defun kpml/insert-non-file-buffer-line (buffer)
-  (destructuring-bind (name dir filename mode modified highlight) buffer
+  (cl-destructuring-bind (name dir filename mode modified highlight) buffer
     (insert "  ")
     (insert (propertize name 'face (if highlight 'kpm-list-buffer-highlight-face 'kpm-list-buffer-face)))
     (insert (propertize " "  'display '(space . (:align-to 40))))
