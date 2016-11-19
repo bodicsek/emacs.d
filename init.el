@@ -79,7 +79,6 @@
 ;; (load-theme 'leuven t)
 
 ;; =========== setting up min package requirements ================
-
 (setq load-path (cons "~/.emacs.d/libraries" load-path))
 
 (require 'cl-lib)
@@ -89,28 +88,13 @@
 (setq package-enable-at-startup nil)
 (package-initialize)
 (mapc (lambda (p) (push p package-archives))
-      '(("melpa"        . "http://melpa.org/packages/")
-        ("melpa-stable" . "http://stable.melpa.org/packages/")))
-(setq package-pinned-packages
-      '((haskell-mode . "melpa-stable")
-        (hindent      . "melpa-stable")
-        (shm          . "melpa-stable")
-        (ghc          . "melpa-stable")
-        (company-ghc  . "melpa-stable")))
+      '(("melpa"        . "http://melpa.org/packages/")))
 (package-force-refresh-if-requested)
 (package-install-packages '(use-package f dash names))
 
 (setq use-package-verbose t)
 
-;; ======================== set exec-path  ======================
-
-(use-package exec-path
-  :demand    t
-  :load-path "~/.emacs.d/libraries"
-  :config    (exec-path-setup "~/.emacs.d/bin"))
-
-;; ========================= basics =============================
-
+; ========================= basics =============================
 (use-package atom-dark-theme
   :disabled
   :config (load-theme 'atom-dark t)
@@ -152,7 +136,6 @@
   :bind      ("C-x C-b" . kpm-list))
 
 ;; ======================== dired ===============================
-
 (use-package dired
   :commands (dired)
   :config (progn
@@ -195,32 +178,7 @@
   :after  (dired)
   :config (bind-key "w" #'wdired-change-to-wdired-mode dired-mode-map))
 
-;; ======================== org mode ===============================
-
-(use-package org
-  :commands org-mode
-  :config (let* ((org-dir            (concat org-notes-dir "/Notes"))
-                 (mobileorg-dir      (concat org-notes-dir "/MobileOrg"))
-                 (mobileorg-pullfile (concat org-dir "/links.org")))
-            (setq org-directory org-dir)
-            (setq org-agenda-files (list org-dir))
-            (setq org-mobile-directory mobileorg-dir)
-            (setq org-mobile-inbox-for-pull mobileorg-pullfile)
-            (setq org-todo-keywords '((sequence "TODO" "ACTIVE" "|" "DONE" "CANCEL")))
-            (setq org-completion-use-ido t))
-  :ensure t)
-
-(use-package deft
-  :commands (deft)
-  :config (progn
-            (setq deft-extensions '("org"))
-            (setq deft-default-extension "org")
-            (setq deft-directory (concat org-notes-dir "/Notes"))
-            (setq deft-text-mode 'org-mode))
-  :ensure t)
-
 ;; ======================== project handling ===============================
-
 (use-package projectile
   :defer  t
   :init   (add-hook 'after-init-hook #'projectile-global-mode)
@@ -232,14 +190,12 @@
   :ensure t)
 
 ;; ======================== diff ===============================
-
 (use-package ediff
   :functions (ediff-setup-windows-plain)
   :commands  (ediff)
   :config    (setq ediff-window-setup-function #'ediff-setup-windows-plain))  
 
 ;; ======================== git ===============================
-
 (use-package magit
   :functions (magit-builtin-completing-read)
   :commands  (magit-init magit-status)
@@ -251,7 +207,6 @@
   :ensure    t)
 
 ;; ======================== intellisense ===============================
-
 (use-package company
   :bind   (("C-SPC"   . company-complete)
            ("C-M-SPC" . company-etags))
@@ -261,23 +216,26 @@
   :ensure t)
 
 ;; ======================== refactoring ===============================
-
 (use-package multiple-cursors
   :bind   (("C->"     . mc/mark-next-like-this)
            ("C-<"     . mc/mark-previous-like-this)
            ("C-c C-<" . mc/mark-all-like-this))
   :ensure t)
 
-;; ======================== flycheck ===============================
-
+;; ======================== linting ===============================
 (use-package flycheck
   :defer t
   :config (progn
-            (setq flycheck-check-syntax-automativcally '(save mode-enabled new-line)))
+            (setq flycheck-check-syntax-automatically '(save mode-enabled new-line)))
   :ensure t)
 
-;; ======================== xml ===============================
+;; ======================== documentation at point ===============================
+(use-package eldoc
+  :commands (eldoc-mode)
+  :init (progn
+          (add-hook 'ielm-mode-hook #'eldoc-mode)))
 
+;; ======================== xml ===============================
 (use-package nxml-mode
   :mode (("\\.csproj\\'" . nxml-mode)
          ("\\.fsproj\\'" . nxml-mode)
@@ -288,7 +246,6 @@
   :after (nxml-mode))
 
 ;; ======================== elisp ===============================
-
 (use-package lisp-mode
   :init (add-hook 'emacs-lisp-mode-hook
                   (lambda ()
@@ -344,24 +301,29 @@
   :commands (overseer-mode)
   :ensure t)
 
-(use-package eldoc
-  :commands (eldoc-mode)
-  :init (progn
-          (add-hook 'ielm-mode-hook #'eldoc-mode)))
+;; ======================== html ===============================
+(use-package web-mode
+  :mode "\\.html$"
+  :config (progn
+            ;; eg. comment at the beginning of the file: -*- engine: jsx -*-
+            (setq web-mode-enable-engine-detection t)
+            (use-package company-web
+              :ensure t))
+  :ensure t)
 
 ;; ======================== ts ===============================
-
-(use-package tide
-  :mode (("\\.ts$" . typescript-mode))
+(use-package typescript-mode
+  :mode "\\.ts$"
   :init (add-hook 'typescript-mode-hook
                   (lambda ()
                     (tide-setup)
                     (flycheck-mode)
-                    (eldoc-mode)
-                    (company-mode-on)))
+                    (eldoc-mode)))
+  :ensure t)
+
+(use-package tide
+  :commands (tide-setup)
   :config (progn
-            (use-package typescript-mode
-              :ensure t)
             ;; formats the buffer before saving
             (add-hook 'before-save-hook 'tide-format-before-save)
             ;; format options
@@ -370,7 +332,6 @@
                                         :placeOpenBraceOnNewLineForFunctions nil)))
   :ensure t)
 
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -378,7 +339,8 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (tide darkokai-theme atom-dark-theme atom-one-dark-theme multiple-cursors dired-subtree windsize which-key w32-browser vlf uuid use-package twittering-mode tuareg try spaceline skeletor shm request paredit-menu paredit overseer omnisharp names mu4e-maildirs-extension monokai-theme magit libmpdee hindent helm-projectile hackernews eyebrowse elfeed dired-sort dired+ deft company-ghc cl-lib-highlight bm))))
+    (company-web-html web-mode windsize which-key w32-browser vlf use-package tide projectile paredit-menu overseer names multiple-cursors magit dired-subtree darkokai-theme company-web cl-lib-highlight bm)))
+ '(safe-local-variable-values (quote ((engine . jsx)))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
