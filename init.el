@@ -181,7 +181,7 @@
 ;; ======================== project handling ===============================
 (use-package projectile
   :defer  t
-  :init   (add-hook 'after-init-hook #'projectile-global-mode)
+  :init   (add-hook 'after-init-hook #'projectile-mode)
   :config (progn
             (define-key projectile-command-map (kbd "C-b") #'projectile-ibuffer)
             (setq projectile-use-git-grep t)
