@@ -217,9 +217,15 @@
 
 ;; ======================== refactoring ===============================
 (use-package multiple-cursors
+  :disabled
   :bind   (("C->"     . mc/mark-next-like-this)
            ("C-<"     . mc/mark-previous-like-this)
            ("C-c C-<" . mc/mark-all-like-this))
+  :ensure t)
+
+(use-package iedit
+  :bind (("C-i" . iedit-mode)
+         ("C-q" . iedit-quit))
   :ensure t)
 
 ;; ======================== linting ===============================
@@ -332,6 +338,11 @@
                                         :placeOpenBraceOnNewLineForFunctions nil)))
   :ensure t)
 
+;; ======================== restclient ===============================
+(use-package restclient
+  :commands (restclient-mode)
+  :ensure t)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -339,7 +350,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (company-web-html web-mode windsize which-key w32-browser vlf use-package tide projectile paredit-menu overseer names multiple-cursors magit dired-subtree darkokai-theme company-web cl-lib-highlight bm)))
+    (iedit company-web-html web-mode windsize which-key w32-browser vlf use-package tide projectile paredit-menu overseer names multiple-cursors magit dired-subtree darkokai-theme company-web cl-lib-highlight bm)))
  '(safe-local-variable-values (quote ((engine . jsx)))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
