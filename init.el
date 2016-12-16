@@ -221,13 +221,6 @@
   :ensure t)
 
 ;; ======================== refactoring ===============================
-(use-package multiple-cursors
-  :disabled
-  :bind   (("C->"     . mc/mark-next-like-this)
-           ("C-<"     . mc/mark-previous-like-this)
-           ("C-c C-<" . mc/mark-all-like-this))
-  :ensure t)
-
 (use-package iedit
   :bind (("C-i" . iedit-mode)
          ("C-q" . iedit-quit))
