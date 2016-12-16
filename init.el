@@ -11,6 +11,11 @@
   ;; fonts for linux
   (set-frame-font "DejaVu Sans Mono-10" nil t))
 
+;; ==================== start server ======================
+(require 'server)
+(or (eq (server-running-p) t)
+    (server-start))
+
 ;; ==================== initial setup ======================
 (setq-default truncate-lines t         ;;always truncate lines
               indent-tabs-mode nil     ;;never use tabs for indentation
