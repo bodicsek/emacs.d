@@ -126,6 +126,11 @@
          ("C-S-M-<down>"  . windsize-down))
   :ensure t)
 
+(use-package copy-paste-utils
+  :load-path "~/.emacs.d/libraries"
+  :bind (("C-d"   . copy-paste-selection)
+         ("C-S-k" . my-kill-line)))
+
 (use-package bm
   :bind (("C-<f2>" . bm-toggle)
          ("<f2>"   . bm-next)
