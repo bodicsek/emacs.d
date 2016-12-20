@@ -227,8 +227,8 @@
 
 ;; ======================== refactoring ===============================
 (use-package iedit
-  :bind (("C-i" . iedit-mode)
-         ("C-q" . iedit-quit))
+  :bind (("C-." . iedit-mode)
+         ("C-," . iedit-quit))
   :ensure t)
 
 ;; ======================== linting ===============================
