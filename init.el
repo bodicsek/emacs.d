@@ -131,6 +131,10 @@
   :bind (("C-d"   . copy-paste-selection)
          ("C-S-k" . my-kill-line)))
 
+(use-package undo-tree
+  :bind ("C-x u" . undo-tree-visualize)
+  :ensure t)
+
 (use-package bm
   :bind (("C-<f2>" . bm-toggle)
          ("<f2>"   . bm-next)
