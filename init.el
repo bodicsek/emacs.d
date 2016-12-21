@@ -34,7 +34,7 @@
       ;; browse-url-browser-function 'browse-url-generic
       ;; gnus-init-file "~/.emacs.d/gnus.init.el"                ;; gnus init file
       visible-bell 1                   ;; disable bell
-      org-notes-dir "~/ownCloud/OrgNotes")
+      org-notes-dir "~/ownCloudAzure/Notes/OrgNotes")
 
 (mapc (lambda (mode) (when (fboundp mode) (apply mode '(0))))
       '(tool-bar-mode
