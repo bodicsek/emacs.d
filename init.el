@@ -217,7 +217,15 @@
                (defalias 'gs #'magit-status)
                (when (eq system-type 'windows-nt)
                  (setenv "GIT_ASKPASS" "git-gui--askpass")))
-  :config    (setq magit-completing-read-function #'magit-builtin-completing-read)
+  :config    (progn
+               ;; completion function
+               (setq magit-completing-read-function #'magit-builtin-completing-read)
+               ;; do not use the vc package for git
+               (setq vc-handled-backends (delq 'Git vc-handled-backends))
+               ;; do not show diffs during commit
+               (remove-hook 'server-switch-hook 'magit-commit-diff)
+               ;; do not ask for confirmation for actions in the list
+               (setq magit-no-confirm '(discard reverse stage-all-changes unstage-all-stages)))
   :ensure    t)
 
 ;; ======================== intellisense ===============================
