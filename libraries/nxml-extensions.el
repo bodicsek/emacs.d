@@ -1,8 +1,8 @@
+;; -*- lexical-binding: t -*-
 ;; not my code
 ;; TODO: update credit
 
-(require 'nxml-mode)
-
+;;;###autoload
 (defun nxml-pretty-print ()
   "Pretty format XML markup in region. You need to have nxml-mode
 http://www.emacswiki.org/cgi-bin/wiki/NxmlMode installed to do

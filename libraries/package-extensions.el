@@ -2,6 +2,7 @@
 
 ;;;; various package extension functions
 
+;;;###autoload
 (defun package-force-refresh-if-requested ()
   "If the --install command line argument is present it refreshes the package content."
   (let ((install-arg "--install"))
@@ -9,6 +10,7 @@
       (package-refresh-contents)
       (setq command-line-args (delete install-arg command-line-args)))))
 
+;;;###autoload
 (defun package-install-packages (package-list)
   "Installs the packages in package-list."
   (mapc

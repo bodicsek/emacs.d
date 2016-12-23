@@ -1,3 +1,6 @@
+;; -*- lexical-binding: t -*-
+
+;;;###autoload
 (defun dired-zip-files (zip-file)
   (interactive "sEnter zip file name: ")
   (shell-command

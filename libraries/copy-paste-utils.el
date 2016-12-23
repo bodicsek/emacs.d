@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 ;;;###autoload
 (defun copy-paste-selection (beg end)
   (interactive (if (use-region-p)
