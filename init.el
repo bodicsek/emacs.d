@@ -99,7 +99,10 @@
 
 (setq use-package-verbose t)
 
-; ========================= basics =============================
+;; ========================= basics =============================
+(use-package diminish
+  :ensure t)
+
 (use-package atom-dark-theme
   :disabled
   :config (load-theme 'atom-dark t)
@@ -235,6 +238,7 @@
   :init   (add-hook 'after-init-hook #'global-company-mode)
   :config (progn
             (setq company-tooltip-align-annotations t))
+  :diminish (company-mode . "Cny") 
   :ensure t)
 
 ;; ======================== refactoring ===============================
@@ -332,6 +336,19 @@
               :ensure t))
   :ensure t)
 
+;; ======================== js ===============================
+(use-package js2-mode
+  :mode (("\\.js$" . js2-mode)
+         ("\\.jsx$" . js2-jsx-mode))
+  :interpreter ("node" . js2-mode)
+  :ensure t)
+
+(use-package js2-refactor
+  :after js2-mode
+  :init (add-hook 'js2-mode-hook #'js2-refactor-mode)
+  :config (js2r-add-keybindings-with-prefix "C-c j")
+  :ensure t)
+
 ;; ======================== ts ===============================
 (use-package typescript-mode
   :mode "\\.ts$"
@@ -346,7 +363,7 @@
   :commands (tide-setup)
   :config (progn
             ;; formats the buffer before saving
-            (add-hook 'before-save-hook 'tide-format-before-save)
+            (add-hook 'before-save-hook #'tide-format-before-save)
             ;; format options
             ;; see https://github.com/Microsoft/TypeScript/blob/cc58e2d7eb144f0b2ff89e6a6685fb4deaa24fde/src/server/protocol.d.ts#L421-473 for the full list available options
             (setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t
