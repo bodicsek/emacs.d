@@ -271,59 +271,50 @@
   :after (nxml-mode))
 
 ;; ======================== elisp ===============================
-(use-package lisp-mode
+(use-package emacs-lisp-mode
+  :bind (:map emacs-lisp-mode-map
+              ("C-m" . reindent-then-newline-and-indent))
   :init (add-hook 'emacs-lisp-mode-hook
                   (lambda ()
-                    (use-package cl-lib)
-                    (use-package s
-                      :ensure t)
-                    (use-package f
-                      :ensure t)
-                    (use-package names
-                      :config (require 'names-dev)
-                      :ensure t)
-                    (use-package dash
-                      :config (dash-enable-font-lock)
-                      :ensure t)
-                    (use-package cl-lib-highlight
-                      :config (progn (cl-lib-highlight-initialize)
-                                     (cl-lib-highlight-warn-cl-initialize))
-                      :ensure t)
                     ;; Recompile if .elc exists
                     (add-hook 'after-save-hook
-                              (lambda ()
-                                (byte-recompile-file buffer-file-name))
+                              (lambda () (byte-recompile-file buffer-file-name))
                               nil
-                              t)
-                    ;; Enter reindents the current line adds a new line and indents the next line
-                    (define-key emacs-lisp-mode-map
-                            "\r" #'reindent-then-newline-and-indent))))
+                              t))))
 
+(use-package cl-lib-highlight
+  :after (emacs-lisp-mode)
+  :functions cl-lib-highlight-warn-cl-initialize
+  :config (progn
+            (cl-lib-highlight-initialize)
+            (cl-lib-highlight-warn-cl-initialize))
+  :ensure t)
+
+(use-package overseer
+  :commands (overseer-mode)
+  :ensure t)
+
+;; ======================== lisp ===============================
 (use-package paredit
   :commands (enable-paredit-mode)
+  :bind (:map paredit-mode-map
+              ("C-<right>"   . paredit-forward)
+              ("C-<left>"    . paredit-backward)
+              ("C-<up>"      . paredit-backward-up)
+              ("C-<down>"    . paredit-forward-down)
+              ("C-M-<right>" . paredit-forward-slurp-sexp)
+              ("C-M-<left>"  . paredit-forward-barf-sexp)
+              ("C-M-<up>"    . paredit-backward-slurp-sexp)
+              ("C-M-<down>"  . paredit-backward-barf-sexp))
   :init (progn
           (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
           (add-hook 'lisp-mode-hook #'enable-paredit-mode)
           (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
           (add-hook 'ielm-mode-hook #'enable-paredit-mode))
-  :config (progn
-            (enable-paredit-mode)
-            (define-key paredit-mode-map (kbd "C-<right>")   #'paredit-forward)
-            (define-key paredit-mode-map (kbd "C-<left>")    #'paredit-backward)
-            (define-key paredit-mode-map (kbd "C-<up>")      #'paredit-backward-up)
-            (define-key paredit-mode-map (kbd "C-<down>")    #'paredit-forward-down)
-            (define-key paredit-mode-map (kbd "C-M-<right>") #'paredit-forward-slurp-sexp)
-            (define-key paredit-mode-map (kbd "C-M-<left>")  #'paredit-forward-barf-sexp)
-            (define-key paredit-mode-map (kbd "C-M-<up>")    #'paredit-backward-slurp-sexp)
-            (define-key paredit-mode-map (kbd "C-M-<down>")  #'paredit-backward-barf-sexp))
   :ensure t)
 
 (use-package paredit-menu
   :after (paredit)
-  :ensure t)
-            
-(use-package overseer
-  :commands (overseer-mode)
   :ensure t)
 
 ;; ======================== html ===============================
