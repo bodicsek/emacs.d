@@ -273,7 +273,7 @@
 ;; ======================== elisp ===============================
 (use-package emacs-lisp-mode
   :bind (:map emacs-lisp-mode-map
-              ("C-m" . reindent-then-newline-and-indent))
+              ("RET" . reindent-then-newline-and-indent))
   :init (add-hook 'emacs-lisp-mode-hook
                   (lambda ()
                     ;; Recompile if .elc exists
