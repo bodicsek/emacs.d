@@ -329,9 +329,19 @@
 ;; ======================== html ===============================
 (use-package web-mode
   :mode "\\.html$"
+  :defines web-mode-content-types-alist
+  :functions web-mode-hook
+  :init (add-hook #'web-mode-hook (lambda ()
+                                    (set (make-local-variable 'company-backends)
+                                         '(company-web-html company-css company-files))))
   :config (progn
+            (setq web-mode-enable-auto-closing t)
+            (setq web-mode-enable-auto-quoting t)
+            ;; use the jsx engine for tsx files
+            (setq web-mode-content-types-alist '(("jsx" . ".*\\.tsx?")))
             ;; eg. comment at the beginning of the file: -*- engine: jsx -*-
             (setq web-mode-enable-engine-detection t)
+            ;; set up the company-web-html backend for autocompletion
             (use-package company-web
               :ensure t))
   :ensure t)
