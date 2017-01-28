@@ -27,6 +27,7 @@
       backup-inhibited t               ;; disable backup files
       auto-save-default nil            ;; disable auto-save
       inhibit-startup-screen t         ;; disable startup screen
+      initial-scratch-message nil      ;; disable scratch buffer explanation
       initial-major-mode 'text-mode    ;; text-mode in *scratch* buffer
       revert-without-query '(".*")     ;; revert buffer without prompt
       kill-whole-line t                ;; line is killed new line inclusive
