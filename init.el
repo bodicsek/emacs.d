@@ -206,6 +206,13 @@
             (setq projectile-enable-caching t))
   :ensure t)
 
+;; ======================== highlight indentation ===============================
+(use-package highlight-indent-guides
+  :commands (highlight-indent-guides-mode)
+  :init (add-hook 'prog-mode-hook #'highlight-indent-guides-mode)
+  :config (setq highlight-indent-guides-method 'column)
+  :ensure t)
+
 ;; ======================== diff ===============================
 (use-package ediff
   :functions (ediff-setup-windows-plain)
