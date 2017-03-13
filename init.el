@@ -236,7 +236,10 @@
                ;; do not show diffs during commit
                (remove-hook 'server-switch-hook 'magit-commit-diff)
                ;; do not ask for confirmation for actions in the list
-               (setq magit-no-confirm '(discard reverse stage-all-changes unstage-all-stages)))
+               (setq magit-no-confirm '(discard reverse stage-all-changes unstage-all-stages))
+               ;; workaround on windows https://github.com/magit/with-editor/issues/21
+               (when (eq system-type 'windows-nt)
+                   (setq with-editor-emacsclient-executable nil)))
   :ensure    t)
 
 ;; ======================== intellisense ===============================
