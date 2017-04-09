@@ -149,9 +149,11 @@
   :init (require 'vlf-setup)
   :ensure t)
 
-(use-package kpm-list
-  :load-path "~/.emacs.d/libraries"
-  :bind      ("C-x C-b" . kpm-list))
+(use-package ibuffer
+  :bind ("C-x C-b" . ibuffer)
+  :config (progn
+            (setq ibuffer-expert t
+                  ibuffer-show-empty-filter-groups nil)))
 
 ;; ======================== dired ===============================
 (use-package dired
