@@ -172,10 +172,20 @@
 
 (use-package dired-subtree
   :after  (dired)
-  :config (bind-key "<tab>"     #'dired-subtree-toggle dired-mode-map)
-          (bind-key "<backtab>" #'dired-subtree-cycle  dired-mode-map)
-          (setq dired-subtree-use-backgrounds nil)
+  :bind (:map dired-mode-map
+              ("<tab>" . dired-subtree-toggle)
+              ("<backtab>" . dired-subtree-cycle))
   :ensure t)
+
+(use-package dired-narrow
+  :after (dired)
+  :bind (:map dired-mode-map
+              ("n" . dired-narrow))
+  :ensure t)
+
+(use-package wdired
+  :after  (dired)
+  :config (bind-key "w" #'wdired-change-to-wdired-mode dired-mode-map))
 
 (use-package w32-browser
   :if     (eq system-type 'windows-nt)
