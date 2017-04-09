@@ -204,9 +204,10 @@
   :config (dired-async-mode 1)
   :ensure t)
 
-(use-package wdired
-  :after  (dired)
-  :config (bind-key "w" #'wdired-change-to-wdired-mode dired-mode-map))
+;; ======================== eshell ===============================
+(use-package eshell-prompt-extras
+  :config (setq eshell-prompt-function #'epe-theme-lambda)
+  :ensure t)
 
 ;; ======================== project handling ===============================
 (use-package projectile
