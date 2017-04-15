@@ -141,6 +141,10 @@
   :init (require 'vlf-setup)
   :ensure t)
 
+(use-package editorconfig
+  :config (editorconfig-mode 1)
+  :ensure t)
+
 ;; ======================== ivy ===============================
 
 (use-package swiper
