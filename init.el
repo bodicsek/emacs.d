@@ -85,6 +85,7 @@
 ;; (load-theme 'leuven t)
 
 ;; =========== setting up min package requirements ================
+
 (setq load-path (cons "~/.emacs.d/libraries" load-path))
 
 (require 'cl-lib)
@@ -101,6 +102,7 @@
 (setq use-package-verbose t)
 
 ;; ========================= basics =============================
+
 (use-package diminish
   :ensure t)
 
@@ -110,24 +112,14 @@
   :ensure t)
 
 (use-package darkokai-theme
+  :disabled
   :config (load-theme 'darkokai t)
   :ensure t)
 
 (use-package which-key
+  :demand t
+  :bind ("C-c k" . which-key-show-top-level)
   :config (which-key-mode)
-  :ensure t)
-
-(use-package windmove
-  :bind (("C-x <up>"    . windmove-up)
-         ("C-x <down>"  . windmove-down)
-         ("C-x <left>"  . windmove-left)
-         ("C-x <right>" . windmove-right)))
-
-(use-package windsize
-  :bind (("C-S-M-<left>"  . windsize-left)
-         ("C-S-M-<right>" . windsize-right)
-         ("C-S-M-<up>"    . windsize-up)
-         ("C-S-M-<down>"  . windsize-down))
   :ensure t)
 
 (use-package copy-paste-utils
@@ -149,13 +141,51 @@
   :init (require 'vlf-setup)
   :ensure t)
 
+;; ======================== ivy ===============================
+
+(use-package swiper
+  :bind ("C-s" . swiper)
+  :ensure t)
+
+(use-package counsel
+  :config (counsel-mode 1)
+  :diminish (counsel-mode . "Ivy")
+  :ensure t)
+
+(use-package counsel-projectile
+  :after (projectile)
+  :config (counsel-projectile-on)
+  :ensure t)
+
+;; ==================== buffer management =======================
+
 (use-package ibuffer
   :bind ("C-x C-b" . ibuffer)
   :config (progn
             (setq ibuffer-expert t
                   ibuffer-show-empty-filter-groups nil)))
 
+;; ==================== window management =======================
+
+(use-package windmove
+  :bind (("C-x <up>"    . windmove-up)
+         ("C-x <down>"  . windmove-down)
+         ("C-x <left>"  . windmove-left)
+         ("C-x <right>" . windmove-right)))
+
+(use-package windsize
+  :bind (("C-S-M-<left>"  . windsize-left)
+         ("C-S-M-<right>" . windsize-right)
+         ("C-S-M-<up>"    . windsize-up)
+         ("C-S-M-<down>"  . windsize-down))
+  :ensure t)
+
+(use-package zoom-window
+  :bind ("C-c z" . zoom-window-zoom)
+  :ensure t)
+
 ;; ======================== dired ===============================
+
 (use-package dired
   :commands (dired)
   :config (progn
@@ -205,11 +235,16 @@
   :ensure t)
 
 ;; ======================== eshell ===============================
+
 (use-package eshell-prompt-extras
-  :config (setq eshell-prompt-function #'epe-theme-lambda)
+  :config (progn
+            (setq eshell-prompt-function #'epe-theme-lambda)
+            (setq epe-show-python-info nil)
+            (setq epe-git-status "git status --porcelain -b"))
   :ensure t)
 
 ;; ======================== project handling ===============================
+
 (use-package projectile
   :defer  t
   :init   (add-hook 'after-init-hook #'projectile-mode)
@@ -221,6 +256,7 @@
   :ensure t)
 
 ;; ======================== highlight indentation ===============================
+
 (use-package highlight-indent-guides
   :commands (highlight-indent-guides-mode)
   :init (add-hook 'prog-mode-hook #'highlight-indent-guides-mode)
@@ -228,12 +264,14 @@
   :ensure t)
 
 ;; ======================== diff ===============================
+
 (use-package ediff
   :functions (ediff-setup-windows-plain)
   :commands  (ediff)
   :config    (setq ediff-window-setup-function #'ediff-setup-windows-plain))  
 
 ;; ======================== git ===============================
+
 (use-package magit
   :functions (magit-builtin-completing-read)
   :commands  (magit-init magit-status)
@@ -248,6 +286,8 @@
                (setq vc-handled-backends (delq 'Git vc-handled-backends))
                ;; do not show diffs during commit
                (remove-hook 'server-switch-hook 'magit-commit-diff)
+               ;; do not auto revert opened repo buffers
+               (magit-auto-revert-mode nil)
                ;; do not ask for confirmation for actions in the list
                (setq magit-no-confirm '(discard reverse stage-all-changes unstage-all-stages))
                ;; workaround on windows https://github.com/magit/with-editor/issues/21
@@ -256,6 +296,7 @@
   :ensure    t)
 
 ;; ======================== intellisense ===============================
+
 (use-package company
   :bind   (("C-SPC"   . company-complete)
            ("C-M-SPC" . company-etags))
@@ -266,12 +307,14 @@
   :ensure t)
 
 ;; ======================== refactoring ===============================
+
 (use-package iedit
   :bind (("C-." . iedit-mode)
          ("C-," . iedit-quit))
   :ensure t)
 
 ;; ======================== linting ===============================
+
 (use-package flycheck
   :defer t
   :config (progn
@@ -279,12 +322,14 @@
   :ensure t)
 
 ;; ======================== documentation at point ===============================
+
 (use-package eldoc
   :commands (eldoc-mode)
   :init (progn
           (add-hook 'ielm-mode-hook #'eldoc-mode)))
 
 ;; ======================== xml ===============================
+
 (use-package nxml-mode
   :mode (("\\.csproj\\'" . nxml-mode)
          ("\\.fsproj\\'" . nxml-mode)
@@ -294,31 +339,10 @@
   :load-path "~/.emacs.d/libraries"
   :after (nxml-mode))
 
-;; ======================== elisp ===============================
-(use-package emacs-lisp-mode
-  :bind (:map emacs-lisp-mode-map
-              ("RET" . reindent-then-newline-and-indent))
-  :init (add-hook 'emacs-lisp-mode-hook
-                  (lambda ()
-                    ;; Recompile if .elc exists
-                    (add-hook 'after-save-hook
-                              (lambda () (byte-recompile-file buffer-file-name))
-                              nil
-                              t))))
 
-(use-package cl-lib-highlight
-  :after (emacs-lisp-mode)
-  :functions cl-lib-highlight-warn-cl-initialize
-  :config (progn
-            (cl-lib-highlight-initialize)
-            (cl-lib-highlight-warn-cl-initialize))
-  :ensure t)
-
-(use-package overseer
-  :commands (overseer-mode)
-  :ensure t)
 
 ;; ======================== lisp ===============================
+
 (use-package paredit
   :commands (enable-paredit-mode)
   :bind (:map paredit-mode-map
@@ -341,7 +365,33 @@
   :after (paredit)
   :ensure t)
 
+;; ======================== elisp ===============================
+
+(use-package emacs-lisp-mode
+  :bind (:map emacs-lisp-mode-map
+              ("RET" . reindent-then-newline-and-indent))
+  :init (add-hook 'emacs-lisp-mode-hook
+                  (lambda ()
+                    ;; Recompile if .elc exists
+                    (add-hook 'after-save-hook
+                              (lambda () (byte-recompile-file buffer-file-name))
+                              nil
+                              t))))
+
+(use-package cl-lib-highlight
+  :after (emacs-lisp-mode)
+  :functions (cl-lib-highlight-warn-cl-initialize)
+  :config (progn
+            (cl-lib-highlight-initialize)
+            (cl-lib-highlight-warn-cl-initialize))
+  :ensure t)
+ 
+(use-package overseer
+  :commands (overseer-mode)
+  :ensure t)
+
 ;; ======================== html ===============================
+
 (use-package web-mode
   :mode "\\.html$"
   :init (add-hook 'web-mode-hook (lambda ()
@@ -358,6 +408,7 @@
   :ensure t)
 
 ;; ======================== js ===============================
+
 (use-package js2-mode
   :mode (("\\.js$" . js2-mode)
          ("\\.jsx$" . js2-jsx-mode))
@@ -371,6 +422,7 @@
   :ensure t)
 
 ;; ======================== ts ===============================
+
 (use-package typescript-mode
   :mode "\\.ts$"
   :init (add-hook 'typescript-mode-hook
@@ -392,12 +444,14 @@
   :ensure t)
 
 ;; ======================== restclient ===============================
+
 (use-package restclient
   :mode "\\.rest$"
   :commands (restclient-mode)
   :ensure t)
 
 ; ======================== custom set file ===============================
+
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file))
