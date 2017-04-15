@@ -240,7 +240,10 @@
   :config (progn
             (setq eshell-prompt-function #'epe-theme-lambda)
             (setq epe-show-python-info nil)
-            (setq epe-git-status "git status --porcelain -b"))
+            (setq epe-git-status "git status --porcelain -b")
+            (defun epe-git-unpushed-number ()
+              (string-to-number
+               (shell-command-to-string "git log @{u}.. --oneline | wc -l"))))
   :ensure t)
 
 ;; ======================== project handling ===============================
