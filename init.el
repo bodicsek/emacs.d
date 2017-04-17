@@ -64,8 +64,6 @@
 (defalias 'rnb  #'rename-buffer)
 (defalias 'br  #'browse-url)
 
-;; (server-start)
-
 ;; themes coming with emacs
 ;;
 ;; adwaita-theme.el
@@ -275,7 +273,7 @@
 (use-package ediff
   :functions (ediff-setup-windows-plain)
   :commands  (ediff)
-  :config    (setq ediff-window-setup-function #'ediff-setup-windows-plain))  
+  :config    (setq ediff-window-setup-function #'ediff-setup-windows-plain))
 
 ;; ======================== git ===============================
 
@@ -392,7 +390,7 @@
             (cl-lib-highlight-initialize)
             (cl-lib-highlight-warn-cl-initialize))
   :ensure t)
- 
+
 (use-package overseer
   :commands (overseer-mode)
   :ensure t)
@@ -462,4 +460,3 @@
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file))
-
