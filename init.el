@@ -39,6 +39,7 @@
 
 (mapc (lambda (mode) (when (fboundp mode) (apply mode '(0))))
       '(tool-bar-mode
+        menu-bar-mode
         scroll-bar-mode))
 
 (mapc (lambda (mode) (when (fboundp mode) (apply mode '(1))))
@@ -46,7 +47,6 @@
         line-number-mode
         column-number-mode
         global-linum-mode
-        menu-bar-mode
         delete-selection-mode
         show-paren-mode
         winner-mode))
