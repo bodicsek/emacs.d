@@ -104,20 +104,18 @@
 (use-package diminish
   :ensure t)
 
-(use-package atom-dark-theme
-  :disabled
-  :config (load-theme 'atom-dark t)
-  :ensure t)
-
-(use-package darkokai-theme
-  :disabled
-  :config (load-theme 'darkokai t)
+(use-package monokai-theme
+  :config (progn
+            (load-theme 'monokai t)
+            (set-face-attribute 'mode-line nil :box (list :line-width 5 :color (face-attribute 'mode-line :background)))
+            (set-face-attribute 'mode-line-inactive nil :box (list :line-width 5 :color (face-attribute 'mode-line-inactive :background))))
   :ensure t)
 
 (use-package which-key
   :demand t
   :bind ("C-c k" . which-key-show-top-level)
   :config (which-key-mode)
+  :diminish (which-key-mode)
   :ensure t)
 
 (use-package copy-paste-utils
@@ -141,6 +139,7 @@
 
 (use-package editorconfig
   :config (editorconfig-mode 1)
+  :diminish (editorconfig-mode)
   :ensure t)
 
 ;; ======================== ivy ===============================
@@ -151,7 +150,7 @@
 
 (use-package counsel
   :config (counsel-mode 1)
-  :diminish (counsel-mode . "Ivy")
+  :diminish (counsel-mode)
   :ensure t)
 
 (use-package counsel-projectile
@@ -308,7 +307,7 @@
   :init   (add-hook 'after-init-hook #'global-company-mode)
   :config (progn
             (setq company-tooltip-align-annotations t))
-  :diminish (company-mode . "Cny") 
+  :diminish (company-mode)
   :ensure t)
 
 ;; ======================== refactoring ===============================
