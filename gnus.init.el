@@ -4,7 +4,6 @@
 	       (nnimap-server-port 993)
 	       (nnimap-stream ssl)))
 
-;; Debian package gnutls-bin contains gnutls-cli
 (setq starttls-gnutls-program "gnutls-cli")
 
 (setq message-send-mail-function 'smtpmail-send-it
@@ -16,9 +15,9 @@
       smtpmail-smtp-service 587)
       ;;gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
 
-;; requires Debian package w3m
-(setq mm-text-html-renderer 'w3m)
+(setq mm-text-html-renderer 'shr)
 (setq gnus-inhibit-images nil)
+(setq gnus-extra-headers '(To Newsgroups X-GM-LABELS))
 
 ;; Automate the fetching of mail.
 ;;(require 'gnus-demon)
