@@ -6,8 +6,8 @@
 (if (eq system-type 'windows-nt)
     ;; fonts for windows
     (progn
-      (add-to-list 'initial-frame-alist '(font . "Lucida Console-10"))
-      (add-to-list 'default-frame-alist '(font . "Lucida Console-10")))
+      (add-to-list 'initial-frame-alist '(font . "Lucida Console-11"))
+      (add-to-list 'default-frame-alist '(font . "Lucida Console-11")))
   ;; fonts for linux
   (set-frame-font "DejaVu Sans Mono-10" nil t))
 
@@ -21,20 +21,19 @@
               indent-tabs-mode nil     ;;never use tabs for indentation
               )
 
-(setq scroll-step 1                    ;;line by line scrolling
+(setq scroll-step 1 ;;line by line scrolling
       scroll-conservatively 10000
       auto-window-vscroll nil
-      backup-inhibited t               ;; disable backup files
-      auto-save-default nil            ;; disable auto-save
-      inhibit-startup-screen t         ;; disable startup screen
-      initial-scratch-message nil      ;; disable scratch buffer explanation
-      initial-major-mode 'text-mode    ;; text-mode in *scratch* buffer
-      revert-without-query '(".*")     ;; revert buffer without prompt
-      kill-whole-line t                ;; line is killed new line inclusive
+      backup-inhibited t          ;; disable backup files
+      auto-save-default nil       ;; disable auto-save
+      inhibit-startup-screen t    ;; disable startup screen
+      initial-scratch-message nil ;; disable scratch buffer explanation
+      initial-major-mode 'text-mode ;; text-mode in *scratch* buffer
+      revert-without-query '(".*")  ;; revert buffer without prompt
+      kill-whole-line t ;; line is killed new line inclusive
       browse-url-generic-program (executable-find "chrome") ;; default browser
-      ;; browse-url-browser-function 'browse-url-generic
-      ;; gnus-init-file "~/.emacs.d/gnus.init.el"                ;; gnus init file
-      visible-bell 1                   ;; disable bell
+      gnus-init-file "~/.emacs.d/gnus.init.el"                ;; gnus init file
+      visible-bell 1 ;; disable bell
       org-notes-dir "~/ownCloudAzure/Notes/OrgNotes")
 
 (mapc (lambda (mode) (when (fboundp mode) (apply mode '(0))))
@@ -43,10 +42,8 @@
         scroll-bar-mode))
 
 (mapc (lambda (mode) (when (fboundp mode) (apply mode '(1))))
-      '(global-hl-line-mode
-        line-number-mode
+      '(line-number-mode
         column-number-mode
-        global-linum-mode
         delete-selection-mode
         show-paren-mode
         winner-mode))
@@ -142,7 +139,32 @@
   :diminish (editorconfig-mode)
   :ensure t)
 
+(use-package nlinum
+  :config (global-nlinum-mode 1)
+  :ensure t)
+
+(use-package nlinum-hl
+  :after nlinum
+  :config (add-hook 'nlinum-mode-hook #'nlinum-hl-mode)
+  :ensure t)
+
+(use-package auto-highlight-symbol
+  :config (progn
+            (setq ahs-modes '(emacs-lisp-mode js2-mode typescript-mode web-mode nxml-mode))
+            (global-auto-highlight-symbol-mode 1))
+  :ensure t)
+
+(use-package xah-find
+  :ensure t)
+
 ;; ======================== ivy ===============================
+
+(use-package ivy
+  :config (progn
+            (ivy-mode 1)
+            (setq ivy-use-virtual-buffers t)
+            (setq enable-recursive-minibuffers t))
+  :ensure t)
 
 (use-package swiper
   :bind ("C-s" . swiper)
@@ -184,6 +206,13 @@
 (use-package zoom-window
   :bind ("C-c z" . zoom-window-zoom)
   :ensure t)
+
+(use-package ace-window
+  :bind ("C-M-S-q" . ace-window)
+  :config (progn
+            (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+            (set-face-attribute 'aw-leading-char-face nil :foreground "red" :height 2.0 :weight 'bold))
+  :config :ensure t)
 
 ;; ======================== dired ===============================
 
