@@ -7,14 +7,17 @@
 (setq starttls-gnutls-program "gnutls-cli")
 
 (setq message-send-mail-function 'smtpmail-send-it
+      user-mail-address "david.nabraczky@gmail.com"
+      user-full-name "Dávid Nábráczky"
       smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
       smtpmail-auth-credentials '(("smtp.gmail.com" 587
 				   "david.nabraczky@gmail.com" nil))
       smtpmail-default-smtp-server "smtp.gmail.com"
       smtpmail-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-service 587)
-      ;;gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
+      smtpmail-smtp-service 587
+      smtpmail-debug-info t)
 
+(setq gnus-summary-line-format "%U%R%z%B%(%[%-23,23f%]%) %-80,80s %&user-date;\n")
 (setq mm-text-html-renderer 'shr)
 (setq gnus-inhibit-images nil)
 (setq gnus-extra-headers '(To Newsgroups X-GM-LABELS))
