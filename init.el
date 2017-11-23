@@ -101,6 +101,14 @@
 
 (setq use-package-verbose t)
 
+;; ========================= x wm =============================
+
+(use-package exwm
+  :if     (not (eq system-type 'windows-nt))
+  :config (use-package exwm-config
+            :config (exwm-config-default))
+  :ensure t)
+
 ;; ========================= basics =============================
 
 (use-package diminish
