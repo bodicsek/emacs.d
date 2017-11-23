@@ -150,7 +150,7 @@
 
 (use-package nlinum-hl
   :after nlinum
-  :config (add-hook 'nlinum-mode-hook #'nlinum-hl-mode)
+  :config (setq nlinum-highlight-current-line t)
   :ensure t)
 
 (use-package auto-highlight-symbol
