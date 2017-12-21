@@ -274,7 +274,9 @@
 
 (use-package async
   :after  (dired)
-  :config (dired-async-mode 1)
+  :config (progn
+            (custom-set-variables '(dired-async-log-file (f-join (f-canonical (getenv "TEMP")) "dired-async.log")))
+            (dired-async-mode 1))
   :ensure t)
 
 ;; ======================== eshell ===============================
