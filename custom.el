@@ -6,7 +6,7 @@
  '(dired-async-log-file (f-join (f-canonical (getenv "TEMP")) "dired-async.log"))
  '(package-selected-packages
    (quote
-    (lua-mode nlinum-hl auto-highlight-symbol ace-window xah-find monokai-theme zenburn-theme powerline moe-theme editorconfig counsel-projectile zoom-window counsel atom-dark-theme idea-darkula-theme dired-narrow eshell-prompt-extras eshell-prompt-extra highlight-indent-guides js2-refactor js2-mode restclient iedit company-web-html windsize w32-browser vlf paredit-menu overseer names dired-subtree darkokai-theme company-web cl-lib-highlight bm)))
+    (typescript-mode nlinum-hl auto-highlight-symbol xah-find nlinum monokai-theme zenburn-theme powerline moe-theme editorconfig counsel-projectile zoom-window counsel atom-dark-theme idea-darkula-theme dired-narrow eshell-prompt-extras eshell-prompt-extra highlight-indent-guides js2-refactor git-commit restclient iedit company-web-html windsize w32-browser vlf paredit-menu overseer names dired-subtree darkokai-theme company-web cl-lib-highlight bm)))
  '(safe-local-variable-values (quote ((engine . jsx)))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

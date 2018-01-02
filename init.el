@@ -36,10 +36,11 @@
       initial-major-mode 'text-mode ;; text-mode in *scratch* buffer
       revert-without-query '(".*")  ;; revert buffer without prompt
       kill-whole-line t ;; line is killed new line inclusive
-      browse-url-generic-program (executable-find "chrome") ;; default browser
+      browse-url-generic-program (executable-find "chromium-browser") ;; default browser
       gnus-init-file "~/.emacs.d/gnus.init.el"                ;; gnus init file
       visible-bell 1 ;; disable bell
-      org-notes-dir "~/ownCloudAzure/Notes/OrgNotes")
+      org-notes-dir "~/NextCloud/Notes/OrgNotes"
+      display-time-day-and-date t)
 
 (mapc (lambda (mode) (when (fboundp mode) (apply mode '(0))))
       '(tool-bar-mode
@@ -51,7 +52,8 @@
         column-number-mode
         delete-selection-mode
         show-paren-mode
-        winner-mode))
+        winner-mode
+        display-time-mode))
 
 (prefer-coding-system 'utf-8)
 
@@ -105,8 +107,11 @@
 
 (use-package exwm
   :if     (not (eq system-type 'windows-nt))
-  :config (use-package exwm-config
-            :config (exwm-config-default))
+  :config (progn
+            (use-package exwm-config
+              :config (exwm-config-default))
+            (use-package exwm-systemtray
+              :config (exwm-systemtray-enable)))
   :ensure t)
 
 ;; ========================= basics =============================
@@ -153,11 +158,7 @@
   :ensure t)
 
 (use-package nlinum
-  :config (global-nlinum-mode 1)
-  :ensure t)
-
-(use-package nlinum-hl
-  :after nlinum
+  :init (add-hook 'prog-mode-hook 'nlinum-mode)
   :config (setq nlinum-highlight-current-line t)
   :ensure t)
 
@@ -168,6 +169,7 @@
   :ensure t)
 
 (use-package xah-find
+  :defer t
   :ensure t)
 
 ;; ======================== ivy ===============================
@@ -177,6 +179,7 @@
             (ivy-mode 1)
             (setq ivy-use-virtual-buffers t)
             (setq enable-recursive-minibuffers t))
+  :diminish (ivy-mode)
   :ensure t)
 
 (use-package swiper
@@ -190,7 +193,7 @@
 
 (use-package counsel-projectile
   :after (projectile)
-  :config (counsel-projectile-on)
+  :config (counsel-projectile-mode)
   :ensure t)
 
 ;; ==================== buffer management =======================
@@ -245,20 +248,21 @@
 
 (use-package dired-subtree
   :after  (dired)
-  :bind (:map dired-mode-map
-              ("<tab>" . dired-subtree-toggle)
-              ("<backtab>" . dired-subtree-cycle))
+  :bind   (:map dired-mode-map
+                ("<tab>" . dired-subtree-toggle)
+                ("<backtab>" . dired-subtree-cycle))
   :ensure t)
 
 (use-package dired-narrow
-  :after (dired)
-  :bind (:map dired-mode-map
-              ("n" . dired-narrow))
+  :after  (dired)
+  :bind   (:map dired-mode-map
+                ("n" . dired-narrow))
   :ensure t)
 
 (use-package wdired
-  :after  (dired)
-  :config (bind-key "w" #'wdired-change-to-wdired-mode dired-mode-map))
+  :after (dired)
+  :bind  (:map dired-mode-map
+               ("w" . wdired-change-to-wdired-mode)))
 
 (use-package w32-browser
   :if     (eq system-type 'windows-nt)
@@ -276,12 +280,14 @@
   :after  (dired)
   :config (progn
             (custom-set-variables '(dired-async-log-file (f-join (f-canonical (getenv "TEMP")) "dired-async.log")))
-            (dired-async-mode 1))
+            (dired-async-mode 1)
+            (async-bytecomp-package-mode 1))
   :ensure t)
 
 ;; ======================== eshell ===============================
 
 (use-package eshell-prompt-extras
+  :after  (eshell)
   :config (progn
             (setq eshell-prompt-function #'epe-theme-lambda)
             (setq epe-show-python-info nil)
