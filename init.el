@@ -6,13 +6,8 @@
 (if (eq system-type 'windows-nt)
     ;; fonts for windows
     (progn
-      ;; (add-to-list 'initial-frame-alist '(font . "Lucida Console-11"))
-      ;; (add-to-list 'default-frame-alist '(font . "Lucida Console-11"))
       (add-to-list 'initial-frame-alist '(font . "DejaVu Sans Mono-11"))
-      (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-11"))
-      ;; (add-to-list 'initial-frame-alist '(font . "Droid Sans Mono-11"))
-      ;; (add-to-list 'default-frame-alist '(font . "Droid Sans Mono-11"))
-      )
+      (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-11")))
   ;; fonts for linux
   (set-frame-font "DejaVu Sans Mono-10" nil t))
 
