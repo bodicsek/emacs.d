@@ -3,13 +3,13 @@
 (add-hook 'after-init-hook #'(lambda () (setq gc-cons-threshold gc-cons-threshold-orig)))
 
 ;; ======================== set font ======================
-(if (eq system-type 'windows-nt)
-    ;; fonts for windows
-    (progn
-      (add-to-list 'initial-frame-alist '(font . "DejaVu Sans Mono-11"))
-      (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-11")))
-  ;; fonts for linux
-  (set-frame-font "DejaVu Sans Mono-10" nil t))
+
+(cond ((eq system-type 'windows-nt)
+       (progn
+	 (add-to-list 'initial-frame-alist '(font . "DejaVu Sans Mono-11"))
+	 (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-11"))))
+      ((eq system-type 'gnu/linux)
+       (set-frame-font "DejaVu Sans Mono-10" nil t)))
 
 ;; ==================== start server ======================
 (require 'server)
@@ -101,7 +101,7 @@
 ;; ========================= x wm =============================
 
 (use-package exwm
-  :if     (not (eq system-type 'windows-nt))
+  :if     (eq system-type 'gnu/linux)
   :config (progn
             (use-package exwm-config
               :config (exwm-config-default))
